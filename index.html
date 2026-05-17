@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Mi Cartera de Inversión</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300&display=swap" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  :root {
+    --bg: #0e0f11;
+    --bg2: #151619;
+    --bg3: #1c1e22;
+    --bg4: #242629;
+    --border: rgba(255,255,255,0.07);
+    --border2: rgba(255,255,255,0.12);
+    --text: #e8e6e1;
+    --text2: #9a9894;
+    --text3: #5c5b58;
+    --green: #4ade80;
+    --green-dim: rgba(74,222,128,0.12);
+    --red: #f87171;
+    --red-dim: rgba(248,113,113,0.12);
+    --accent: #c8a97e;
+    --accent-dim: rgba(200,169,126,0.12);
+    --blue: #60a5fa;
+    --blue-dim: rgba(96,165,250,0.1);
+    --radius: 10px;
+    --radius-lg: 14px;
+    --mono: 'DM Mono', monospace;
+    --serif: 'Fraunces', serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ── Layout ── */
+  .shell { max-width: 1100px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ── Header ── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 20px 0;
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .logo {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text);
+    letter-spacing: -0.02em;
+  }
+  .logo span { color: var(--accent); font-style: italic; }
+  .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .last-update { font-size: 11px; color: var(--text3); }
+  #updateStatus {
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+    display: none;
+  }
+  #updateStatus.active { display: inline-block; color: var(--accent); border-color: var(--accent); animation: pulse 1s ease-in-out infinite; }
+  #updateStatus.done { display: inline-block; color: var(--green); border-color: var(--green); animation: none; }
+  #updateStatus.error { display: inline-block; color: var(--red); border-color: var(--red); animation: none; }
+
+  /* ── Buttons ── */
+  .btn {
+    background: transparent;
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 8px 16px;
+    font-size: 12px;
+    font-family: var(--mono);
+    cursor: pointer;
+    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .btn:hover { background: var(--bg3); border-color: var(--border2); }
+  .btn:active { transform: scale(0.97); }
+  .btn.primary { background: var(--accent); color: #1a1400; border-color: var(--accent); font-weight: 500; }
+  .btn.primary:hover { background: #d4b98a; }
+  .btn.green { border-color: var(--green); color: var(--green); }
+  .btn.green:hover { background: var(--green-dim); }
+  .btn.red { border-color: var(--red); color: var(--red); }
+  .btn.red:hover { background: var(--red-dim); }
+  .btn.blue { border-color: var(--blue); color: var(--blue); }
+  .btn.blue:hover { background: var(--blue-dim); }
+  .btn svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+
+  /* ── Metrics row ── */
+  .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; margin-bottom: 32px; }
+  .metric {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  .metric::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--accent);
+    opacity: 0.4;
+  }
+  .metric.green-line::before { background: var(--green); opacity: 0.6; }
+  .metric.red-line::before { background: var(--red); opacity: 0.6; }
+  .metric .mlabel { font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text3); margin-bottom: 10px; }
+  .metric .mval { font-family: var(--serif); font-size: 28px; font-weight: 300; color: var(--text); line-height: 1; }
+  .metric .mval.pos { color: var(--green); }
+  .metric .mval.neg { color: var(--red); }
+  .metric .msub { font-size: 11px; color: var(--text3); margin-top: 6px; }
+  .metric .msub.pos { color: var(--green); }
+  .metric .msub.neg { color: var(--red); }
+
+  /* ── Section ── */
+  .section { margin-bottom: 40px; }
+  .section-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .section-head h2 { font-family: var(--serif); font-size: 17px; font-weight: 300; color: var(--text); letter-spacing: -0.01em; }
+  .section-head .actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+  /* ── Plan card ── */
+  .plan-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    margin-bottom: 12px;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+  .plan-card:hover { border-color: var(--border2); }
+  .plan-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    cursor: pointer;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .plan-header:hover { background: rgba(255,255,255,0.02); }
+  .plan-name { font-family: var(--serif); font-size: 16px; font-weight: 300; color: var(--text); }
+  .plan-platform { font-size: 11px; color: var(--text3); margin-top: 2px; letter-spacing: 0.04em; text-transform: uppercase; }
+  .plan-kpis { display: flex; gap: 24px; align-items: center; flex-wrap: wrap; }
+  .plan-kpi { text-align: right; }
+  .plan-kpi .kv { font-size: 14px; font-weight: 500; font-family: var(--mono); }
+  .plan-kpi .kl { font-size: 10px; color: var(--text3); margin-top: 1px; text-transform: uppercase; letter-spacing: 0.06em; }
+  .plan-actions { display: flex; gap: 6px; }
+  .plan-body { display: none; padding: 0 20px 20px; border-top: 1px solid var(--border); }
+
+  /* ── Table ── */
+  .pos-table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+  .pos-table th {
+    font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase;
+    color: var(--text3); font-weight: 400; padding: 0 0 10px;
+    text-align: left; border-bottom: 1px solid var(--border);
+  }
+  .pos-table td { padding: 10px 0; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .pos-table tr:last-child td { border-bottom: none; }
+  .pos-table td:not(:first-child) { padding-left: 12px; }
+  .pos-table th:not(:first-child) { padding-left: 12px; }
+  .ticker-cell .t { font-weight: 500; color: var(--text); font-size: 13px; }
+  .ticker-cell .n { font-size: 11px; color: var(--text3); }
+  .badge {
+    display: inline-block; font-size: 10px; padding: 2px 7px;
+    border-radius: 20px; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 500;
+  }
+  .badge.etf { background: rgba(74,222,128,0.1); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
+  .badge.accion { background: rgba(96,165,250,0.1); color: #60a5fa; border: 1px solid rgba(96,165,250,0.2); }
+  .badge.crypto { background: rgba(200,169,126,0.1); color: var(--accent); border: 1px solid rgba(200,169,126,0.2); }
+  .badge.fondo { background: rgba(196,181,253,0.1); color: #c4b5fd; border: 1px solid rgba(196,181,253,0.2); }
+  .badge.otro { background: var(--bg4); color: var(--text2); border: 1px solid var(--border2); }
+  .price-input {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 4px 8px;
+    color: var(--text);
+    font-family: var(--mono);
+    font-size: 13px;
+    width: 90px;
+    transition: border-color 0.15s;
+  }
+  .price-input:focus { outline: none; border-color: var(--accent); }
+  .price-input.updating { border-color: var(--accent); color: var(--accent); }
+  .pos-pnl { font-size: 13px; }
+  .pos-pnl .pct { font-size: 11px; margin-top: 1px; }
+  .pos-green { color: var(--green); }
+  .pos-red { color: var(--red); }
+
+  /* ── Aportaciones ── */
+  .ap-section { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--border); }
+  .ap-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 10px; }
+  .ap-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ap-chip {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 5px 12px;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--text2);
+  }
+  .ap-chip .ap-date { font-size: 10px; color: var(--text3); }
+  .ap-chip .ap-del { background: none; border: none; cursor: pointer; color: var(--text3); font-size: 16px; line-height: 1; padding: 0; transition: color 0.15s; }
+  .ap-chip .ap-del:hover { color: var(--red); }
+
+  /* ── Chart ── */
+  .charts-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 32px; }
+  @media(max-width:600px){ .charts-row { grid-template-columns: 1fr; } }
+  .chart-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+  .chart-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); margin-bottom: 16px; }
+  .chart-wrap { position: relative; height: 200px; }
+
+  /* ── IO Panel ── */
+  .io-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  @media(max-width:600px){ .io-grid { grid-template-columns: 1fr; } }
+  .io-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 20px;
+  }
+  .io-card h3 { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 6px; display: flex; align-items: center; gap: 7px; }
+  .io-card p { font-size: 12px; color: var(--text3); margin-bottom: 14px; line-height: 1.6; }
+  .io-btns { display: flex; gap: 8px; flex-wrap: wrap; }
+  .drop-zone {
+    border: 1px dashed var(--border2);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+    color: var(--text3);
+    font-size: 12px;
+    cursor: pointer;
+    transition: all 0.15s;
+    margin-bottom: 10px;
+  }
+  .drop-zone:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-dim); }
+  .drop-zone svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 1.5; margin: 0 auto 8px; display: block; }
+
+  /* ── Modal ── */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-lg);
+    padding: 28px;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.2s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+  .modal h3 { font-family: var(--serif); font-size: 19px; font-weight: 300; color: var(--text); margin-bottom: 20px; }
+  .form-group { margin-bottom: 16px; }
+  .form-group label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); margin-bottom: 6px; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    width: 100%;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 10px 12px;
+    font-size: 13px;
+    font-family: var(--mono);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--accent); }
+  .form-group select option { background: var(--bg3); }
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px; }
+  .warn-box { background: var(--red-dim); border: 1px solid rgba(248,113,113,0.2); border-radius: var(--radius); padding: 10px 14px; font-size: 12px; color: var(--red); margin-bottom: 4px; }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--bg3);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text);
+    z-index: 300;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.25s;
+    pointer-events: none;
+    max-width: 320px;
+  }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.ok { border-color: rgba(74,222,128,0.3); color: var(--green); }
+  .toast.err { border-color: rgba(248,113,113,0.3); color: var(--red); }
+
+  /* ── Empty ── */
+  .empty { text-align: center; padding: 40px 20px; color: var(--text3); }
+  .empty svg { width: 36px; height: 36px; stroke: currentColor; fill: none; stroke-width: 1.2; margin: 0 auto 12px; display: block; opacity: 0.4; }
+
+  /* ── Animations ── */
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+  .spinning { animation: spin 0.8s linear infinite; display: inline-block; }
+
+  /* ── Responsive ── */
+  @media(max-width:700px) {
+    .plan-kpis { gap: 12px; }
+    .plan-kpi { display: none; }
+    .plan-kpi:first-child { display: block; }
+  }
+  @media(max-width:500px) {
+    .metrics { grid-template-columns: 1fr 1fr; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--bg4); border-radius: 3px; }
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- HEADER -->
+  <header>
+    <div class="logo">cartera<span>.</span></div>
+    <div class="header-right">
+      <span class="last-update" id="lastUpdate">Precios no actualizados</span>
+      <span id="updateStatus"></span>
+      <button class="btn" onclick="openModal('addPlan')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo plan
+      </button>
+      <button class="btn primary" id="refreshBtn" onclick="refreshPrices()">
+        <svg id="refreshIcon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+        Actualizar precios
+      </button>
+    </div>
+  </header>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="mlabel">Capital invertido</div>
+      <div class="mval" id="mInvested">€0.00</div>
+      <div class="msub">Total aportado + compras</div>
+    </div>
+    <div class="metric" id="mCardValue">
+      <div class="mlabel">Valor actual</div>
+      <div class="mval" id="mValue">€0.00</div>
+      <div class="msub">A precio de mercado</div>
+    </div>
+    <div class="metric" id="mCardPnL">
+      <div class="mlabel">Beneficio / pérdida</div>
+      <div class="mval" id="mPnL">€0.00</div>
+      <div class="msub" id="mPnLPct">—</div>
+    </div>
+    <div class="metric">
+      <div class="mlabel">Posiciones</div>
+      <div class="mval" id="mPositions">0</div>
+      <div class="msub" id="mPlans">0 planes activos</div>
+    </div>
+  </div>
+
+  <!-- CHARTS -->
+  <div class="charts-row" id="chartsRow" style="display:none">
+    <div class="chart-card">
+      <div class="chart-title">Distribución por plan</div>
+      <div class="chart-wrap"><canvas id="donutChart" role="img" aria-label="Distribución de la cartera por plan de inversión">Distribución</canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Rentabilidad por plan (%)</div>
+      <div class="chart-wrap"><canvas id="barChart" role="img" aria-label="Rentabilidad por plan en porcentaje">Rentabilidad</canvas></div>
+    </div>
+  </div>
+
+  <!-- PLANES -->
+  <div class="section">
+    <div class="section-head">
+      <h2>Planes de inversión</h2>
+    </div>
+    <div id="plansContainer">
+      <div class="empty">
+        <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+        Sin planes. Crea tu primer plan de inversión arriba.
+      </div>
+    </div>
+  </div>
+
+  <!-- BACKUP -->
+  <div class="section">
+    <div class="section-head">
+      <h2>Copia de seguridad</h2>
+    </div>
+    <div class="io-grid">
+      <div class="io-card">
+        <h3>
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Exportar datos
+        </h3>
+        <p>Descarga todos tus planes, posiciones y aportaciones como archivo JSON. Guárdalo como copia de seguridad.</p>
+        <div class="io-btns">
+          <button class="btn green" onclick="exportJSON()">
+            <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar .json
+          </button>
+          <button class="btn" onclick="exportClipboard()">
+            <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            Copiar
+          </button>
+        </div>
+      </div>
+      <div class="io-card">
+        <h3>
+          <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Importar datos
+        </h3>
+        <p>Restaura tu cartera desde una copia de seguridad. Esto reemplazará los datos actuales.</p>
+        <div class="drop-zone" onclick="document.getElementById('fileInput').click()" ondragover="ev(event)" ondrop="drop(event)">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Arrastra tu .json aquí o haz clic
+        </div>
+        <input type="file" id="fileInput" accept=".json" style="display:none" onchange="fileInput(event)" />
+        <button class="btn" onclick="openModal('importText')">
+          <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          Pegar JSON
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- AYUDA PRECIOS -->
+  <div class="section">
+    <div class="section-head"><h2>Sobre la actualización de precios</h2></div>
+    <div class="io-card" style="line-height:1.8">
+      <p style="font-size:12px;color:var(--text2);margin:0">
+        Los precios se obtienen de <strong style="color:var(--accent)">Yahoo Finance</strong> a través de un proxy CORS gratuito (<code style="font-size:11px;color:var(--accent)">allorigins.win</code>).
+        Introduce el <strong style="color:var(--text)">ticker exacto</strong> al añadir cada posición:<br><br>
+        <strong style="color:var(--text)">ETFs:</strong> VWCE.DE · CSPX.L · SXR8.DE · EQQQ.L<br>
+        <strong style="color:var(--text)">Acciones:</strong> MSFT · AAPL · NVDA · AMZN<br>
+        <strong style="color:var(--text)">Cripto:</strong> BTC-USD · ETH-USD · SOL-USD<br>
+        <strong style="color:var(--text)">Fondos ES:</strong> busca el ISIN en Yahoo y usa el símbolo que aparece<br><br>
+        <span style="color:var(--text3);font-size:11px">Si un ticker no se encuentra, el precio no se actualiza y se mantiene el último valor manual introducido.</span>
+      </p>
+    </div>
+  </div>
+
+</div><!-- /shell -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="overlayClick(event)">
+  <div class="modal">
+    <h3 id="modalTitle"></h3>
+    <div id="modalContent"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ─────────────────────────────────────────
+//  STATE & STORAGE
+// ─────────────────────────────────────────
+let state = { plans: [] };
+const STORAGE_KEY = 'cartera_v3';
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) state = JSON.parse(raw);
+  } catch(e) {}
+  render();
+}
+
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch(e) {}
+}
+
+// ─────────────────────────────────────────
+//  FORMATTING
+// ─────────────────────────────────────────
+function fmtEur(n, dec=2) {
+  const v = parseFloat(n) || 0;
+  return '€' + v.toLocaleString('es-ES', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+}
+function fmtPct(n) {
+  const v = parseFloat(n) || 0;
+  return (v >= 0 ? '+' : '') + v.toFixed(2) + '%';
+}
+function typeLabel(t) {
+  return { etf:'ETF', accion:'Acción', crypto:'Cripto', fondo:'Fondo', otro:'Otro' }[t] || t;
+}
+
+// ─────────────────────────────────────────
+//  CALC
+// ─────────────────────────────────────────
+function calcPlan(p) {
+  let invested = 0, currentVal = 0;
+  (p.aportaciones || []).forEach(a => invested += parseFloat(a.amount) || 0);
+  (p.positions || []).forEach(pos => {
+    const s = parseFloat(pos.shares) || 0;
+    invested += s * (parseFloat(pos.buyPrice) || 0);
+    currentVal += s * (parseFloat(pos.currentPrice) || 0);
+  });
+  const pnl = currentVal - invested;
+  const pnlPct = invested > 0 ? (pnl / invested) * 100 : 0;
+  return { invested, currentVal, pnl, pnlPct };
+}
+
+function calcTotal() {
+  let inv = 0, val = 0;
+  state.plans.forEach(p => { const c = calcPlan(p); inv += c.invested; val += c.currentVal; });
+  return { inv, val, pnl: val - inv, pct: inv > 0 ? ((val - inv) / inv) * 100 : 0 };
+}
+
+// ─────────────────────────────────────────
+//  RENDER
+// ─────────────────────────────────────────
+let donutChart = null, barChart = null;
+
+function render() {
+  renderMetrics();
+  renderPlans();
+  renderCharts();
+}
+
+function renderMetrics() {
+  const t = calcTotal();
+  document.getElementById('mInvested').textContent = fmtEur(t.inv);
+  document.getElementById('mValue').textContent = fmtEur(t.val);
+
+  const pnlEl = document.getElementById('mPnL');
+  pnlEl.textContent = fmtEur(t.pnl);
+  pnlEl.className = 'mval ' + (t.pnl >= 0 ? 'pos' : 'neg');
+
+  const pctEl = document.getElementById('mPnLPct');
+  pctEl.textContent = fmtPct(t.pct);
+  pctEl.className = 'msub ' + (t.pnl >= 0 ? 'pos' : 'neg');
+
+  const card = document.getElementById('mCardPnL');
+  card.className = 'metric ' + (t.pnl >= 0 ? 'green-line' : 'red-line');
+
+  let pos = 0;
+  state.plans.forEach(p => pos += (p.positions || []).length);
+  document.getElementById('mPositions').textContent = pos;
+  document.getElementById('mPlans').textContent = state.plans.length + ' planes activos';
+}
+
+function renderPlans() {
+  const c = document.getElementById('plansContainer');
+  if (!state.plans.length) {
+    c.innerHTML = `<div class="empty">
+      <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+      Sin planes. Crea tu primer plan de inversión arriba.
+    </div>`;
+    return;
+  }
+
+  c.innerHTML = state.plans.map((p, i) => {
+    const stats = calcPlan(p);
+    const pnlColor = stats.pnl >= 0 ? 'var(--green)' : 'var(--red)';
+
+    const posRows = (p.positions || []).map((pos, j) => {
+      const inv = (parseFloat(pos.shares) || 0) * (parseFloat(pos.buyPrice) || 0);
+      const cur = (parseFloat(pos.shares) || 0) * (parseFloat(pos.currentPrice) || 0);
+      const pnl = cur - inv;
+      const pnlPct = inv > 0 ? (pnl / inv) * 100 : 0;
+      const cls = pnl >= 0 ? 'pos-green' : 'pos-red';
+      return `<tr>
+        <td><span class="badge ${pos.type}">${typeLabel(pos.type)}</span></td>
+        <td class="ticker-cell"><div class="t">${pos.ticker}</div><div class="n">${pos.name || ''}</div></td>
+        <td>${(parseFloat(pos.shares)||0).toLocaleString('es-ES',{maximumFractionDigits:6})}</td>
+        <td>${fmtEur(pos.buyPrice)}</td>
+        <td><input class="price-input" type="number" step="0.01" value="${(parseFloat(pos.currentPrice)||0).toFixed(2)}" onchange="updatePrice(${i},${j},this.value)" /></td>
+        <td class="pos-pnl ${cls}">
+          <div>${fmtEur(pnl)}</div>
+          <div class="pct">${fmtPct(pnlPct)}</div>
+        </td>
+        <td>
+          <button class="btn red" onclick="removePosition(${i},${j})" title="Eliminar">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/></svg>
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+
+    const apChips = (p.aportaciones || []).map((a, k) =>
+      `<span class="ap-chip">${fmtEur(a.amount)}<span class="ap-date">${a.fecha || ''}</span><button class="ap-del" onclick="removeAp(${i},${k})" title="Eliminar">×</button></span>`
+    ).join('');
+
+    return `<div class="plan-card">
+      <div class="plan-header" onclick="togglePlan(${i})">
+        <div>
+          <div class="plan-name">${p.name}</div>
+          <div class="plan-platform">${p.platform} · ${(p.positions||[]).length} posiciones</div>
+        </div>
+        <div class="plan-kpis">
+          <div class="plan-kpi">
+            <div class="kv">${fmtEur(stats.invested)}</div>
+            <div class="kl">Invertido</div>
+          </div>
+          <div class="plan-kpi">
+            <div class="kv">${fmtEur(stats.currentVal)}</div>
+            <div class="kl">Valor actual</div>
+          </div>
+          <div class="plan-kpi">
+            <div class="kv" style="color:${pnlColor}">${fmtEur(stats.pnl)}</div>
+            <div class="kl">${fmtPct(stats.pnlPct)}</div>
+          </div>
+          <div class="plan-actions" onclick="event.stopPropagation()">
+            <button class="btn" onclick="openModal('addPos',${i})">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Posición
+            </button>
+            <button class="btn" onclick="openModal('addAp',${i})">
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Aportación
+            </button>
+            <button class="btn red" onclick="removePlan(${i})">
+              <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="plan-body" id="body${i}">
+        ${(p.positions||[]).length ? `
+        <div style="overflow-x:auto;margin-top:4px">
+          <table class="pos-table">
+            <thead><tr>
+              <th>Tipo</th><th>Activo</th><th>Unidades</th>
+              <th>Precio compra</th><th>Precio actual</th><th>PyG</th><th></th>
+            </tr></thead>
+            <tbody>${posRows}</tbody>
+          </table>
+        </div>` : `<div style="color:var(--text3);font-size:12px;padding:16px 0">Sin posiciones todavía.</div>`}
+        <div class="ap-section">
+          <div class="ap-label">Aportaciones de capital</div>
+          <div class="ap-chips">
+            ${apChips || '<span style="color:var(--text3);font-size:12px">Sin aportaciones registradas.</span>'}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderCharts() {
+  const row = document.getElementById('chartsRow');
+  if (!state.plans.length) { row.style.display = 'none'; return; }
+  row.style.display = 'grid';
+
+  const labels = state.plans.map(p => p.name);
+  const vals = state.plans.map(p => { const c = calcPlan(p); return parseFloat((c.currentVal || c.invested).toFixed(2)); });
+  const pcts = state.plans.map(p => parseFloat(calcPlan(p).pnlPct.toFixed(2)));
+  const palette = ['#4ade80','#60a5fa','#c8a97e','#c4b5fd','#f87171','#facc15','#34d399'];
+
+  if (donutChart) donutChart.destroy();
+  donutChart = new Chart(document.getElementById('donutChart').getContext('2d'), {
+    type: 'doughnut',
+    data: { labels, datasets: [{ data: vals, backgroundColor: palette.slice(0, labels.length), borderWidth: 0 }] },
+    options: {
+      responsive: true, maintainAspectRatio: false, cutout: '65%',
+      plugins: {
+        legend: { position: 'right', labels: { color: '#9a9894', font: { family: "'DM Mono', monospace", size: 11 }, boxWidth: 10, padding: 10 } }
+      }
+    }
+  });
+
+  if (barChart) barChart.destroy();
+  const barColors = pcts.map(v => v >= 0 ? 'rgba(74,222,128,0.7)' : 'rgba(248,113,113,0.7)');
+  barChart = new Chart(document.getElementById('barChart').getContext('2d'), {
+    type: 'bar',
+    data: { labels, datasets: [{ data: pcts, backgroundColor: barColors, borderRadius: 4, borderSkipped: false }] },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { ticks: { color: '#9a9894', font: { family: "'DM Mono', monospace", size: 10 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#9a9894', font: { family: "'DM Mono', monospace", size: 10 }, callback: v => v + '%' }, grid: { color: 'rgba(255,255,255,0.04)' } }
+      }
+    }
+  });
+}
+
+// ─────────────────────────────────────────
+//  PRICE UPDATE — Yahoo Finance via proxy
+// ─────────────────────────────────────────
+async function refreshPrices() {
+  const tickers = [];
+  state.plans.forEach(p => {
+    (p.positions || []).forEach(pos => {
+      if (pos.ticker && !tickers.includes(pos.ticker)) tickers.push(pos.ticker);
+    });
+  });
+
+  if (!tickers.length) { toast('Sin posiciones para actualizar', 'err'); return; }
+
+  const icon = document.getElementById('refreshIcon');
+  const statusEl = document.getElementById('updateStatus');
+  icon.classList.add('spinning');
+  statusEl.textContent = 'Buscando precios…';
+  statusEl.className = 'active';
+  document.getElementById('refreshBtn').disabled = true;
+
+  let updated = 0, failed = [];
+
+  for (const ticker of tickers) {
+    try {
+      const price = await fetchPrice(ticker);
+      if (price !== null) {
+        state.plans.forEach(p => {
+          (p.positions || []).forEach(pos => {
+            if (pos.ticker === ticker) pos.currentPrice = price;
+          });
+        });
+        updated++;
+      } else {
+        failed.push(ticker);
+      }
+    } catch(e) {
+      failed.push(ticker);
+    }
+    // small delay to avoid rate-limit
+    await new Promise(r => setTimeout(r, 300));
+  }
+
+  saveState();
+  render();
+  icon.classList.remove('spinning');
+  document.getElementById('refreshBtn').disabled = false;
+
+  const now = new Date().toLocaleString('es-ES');
+  document.getElementById('lastUpdate').textContent = 'Actualizado: ' + now;
+
+  if (failed.length === 0) {
+    statusEl.textContent = '✓ ' + updated + ' precios actualizados';
+    statusEl.className = 'done';
+    toast('✓ ' + updated + ' precios actualizados correctamente', 'ok');
+  } else {
+    statusEl.textContent = updated + ' ok · ' + failed.length + ' fallidos';
+    statusEl.className = 'error';
+    toast('⚠ ' + failed.join(', ') + ' no encontrados. Revisa el ticker.', 'err');
+  }
+  setTimeout(() => { statusEl.className = ''; statusEl.textContent = ''; }, 8000);
+}
+
+async function fetchPrice(ticker) {
+  // Yahoo Finance via allorigins CORS proxy
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
+  const proxy = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+  const res = await fetch(proxy, { signal: AbortSignal.timeout(10000) });
+  if (!res.ok) return null;
+  const json = await res.json();
+  const data = JSON.parse(json.contents);
+  const price = data?.chart?.result?.[0]?.meta?.regularMarketPrice;
+  return price != null ? parseFloat(price.toFixed(4)) : null;
+}
+
+// ─────────────────────────────────────────
+//  PLAN ACTIONS
+// ─────────────────────────────────────────
+function togglePlan(i) {
+  const b = document.getElementById('body' + i);
+  b.style.display = b.style.display === 'block' ? 'none' : 'block';
+}
+
+function removePlan(i) {
+  if (!confirm('¿Eliminar el plan "' + state.plans[i].name + '" y todas sus posiciones?')) return;
+  state.plans.splice(i, 1); saveState(); render();
+}
+
+function removePosition(pi, ji) {
+  state.plans[pi].positions.splice(ji, 1); saveState(); render();
+  document.getElementById('body' + pi).style.display = 'block';
+}
+
+function updatePrice(pi, ji, val) {
+  state.plans[pi].positions[ji].currentPrice = parseFloat(val) || 0;
+  saveState(); renderMetrics(); renderCharts();
+  document.getElementById('body' + pi).style.display = 'block';
+}
+
+function removeAp(pi, ki) {
+  state.plans[pi].aportaciones.splice(ki, 1); saveState(); render();
+  document.getElementById('body' + pi).style.display = 'block';
+}
+
+// ─────────────────────────────────────────
+//  MODAL
+// ─────────────────────────────────────────
+function openModal(type, planIdx) {
+  document.getElementById('modalOverlay').classList.add('open');
+
+  if (type === 'addPlan') {
+    document.getElementById('modalTitle').textContent = 'Nuevo plan de inversión';
+    document.getElementById('modalContent').innerHTML = `
+      <div class="form-group"><label>Nombre del plan</label><input id="f_name" placeholder="Ej: Plan ETFs XTB" /></div>
+      <div class="form-group"><label>Plataforma</label><input id="f_platform" placeholder="Ej: XTB, Degiro, Binance…" /></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn primary" onclick="addPlan()">Crear plan</button>
+      </div>`;
+
+  } else if (type === 'addPos') {
+    document.getElementById('modalTitle').textContent = 'Añadir posición';
+    document.getElementById('modalContent').innerHTML = `
+      <div class="form-group"><label>Tipo de activo</label>
+        <select id="f_type"><option value="etf">ETF</option><option value="accion">Acción</option><option value="crypto">Cripto</option><option value="fondo">Fondo</option><option value="otro">Otro</option></select>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Ticker Yahoo Finance</label><input id="f_ticker" placeholder="Ej: VWCE.DE, BTC-USD" /></div>
+        <div class="form-group"><label>Nombre (opcional)</label><input id="f_posname" placeholder="Ej: Vanguard All-World" /></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Nº de unidades / participaciones</label><input id="f_shares" type="number" min="0" step="any" placeholder="10" /></div>
+        <div class="form-group"><label>Precio medio de compra (€)</label><input id="f_buyprice" type="number" min="0" step="any" placeholder="98.50" /></div>
+      </div>
+      <div class="form-group"><label>Precio actual (€) — se actualizará automáticamente</label><input id="f_currprice" type="number" min="0" step="any" placeholder="105.20" /></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn primary" onclick="addPosition(${planIdx})">Añadir posición</button>
+      </div>`;
+
+  } else if (type === 'addAp') {
+    document.getElementById('modalTitle').textContent = 'Registrar aportación';
+    document.getElementById('modalContent').innerHTML = `
+      <div class="form-group"><label>Importe (€)</label><input id="f_amount" type="number" min="0" step="any" placeholder="500" /></div>
+      <div class="form-group"><label>Fecha</label><input id="f_fecha" type="date" value="${new Date().toISOString().split('T')[0]}" /></div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn primary" onclick="addAportacion(${planIdx})">Guardar</button>
+      </div>`;
+
+  } else if (type === 'importText') {
+    document.getElementById('modalTitle').textContent = 'Importar desde portapapeles';
+    document.getElementById('modalContent').innerHTML = `
+      <div class="form-group"><label>Pega aquí el contenido JSON</label>
+        <textarea id="f_json" rows="8" placeholder='{"plans":[...]}'></textarea>
+      </div>
+      <div class="warn-box">⚠ Esto reemplazará todos los datos actuales.</div>
+      <div class="modal-actions">
+        <button class="btn" onclick="closeModal()">Cancelar</button>
+        <button class="btn red" onclick="importFromText()">Importar</button>
+      </div>`;
+  }
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+function overlayClick(e) {
+  if (e.target === document.getElementById('modalOverlay')) closeModal();
+}
+
+function addPlan() {
+  const name = document.getElementById('f_name').value.trim();
+  const platform = document.getElementById('f_platform').value.trim();
+  if (!name) { toast('Introduce un nombre', 'err'); return; }
+  state.plans.push({ name, platform: platform || 'Sin plataforma', positions: [], aportaciones: [] });
+  saveState(); render(); closeModal();
+  toast('✓ Plan "' + name + '" creado', 'ok');
+}
+
+function addPosition(i) {
+  const ticker = (document.getElementById('f_ticker').value.trim() || '').toUpperCase();
+  const shares = parseFloat(document.getElementById('f_shares').value);
+  const buyPrice = parseFloat(document.getElementById('f_buyprice').value);
+  const currPrice = parseFloat(document.getElementById('f_currprice').value) || buyPrice;
+  if (!ticker || isNaN(shares) || isNaN(buyPrice)) { toast('Rellena todos los campos obligatorios', 'err'); return; }
+  state.plans[i].positions.push({
+    type: document.getElementById('f_type').value,
+    ticker,
+    name: document.getElementById('f_posname').value.trim(),
+    shares, buyPrice, currentPrice: currPrice
+  });
+  saveState(); render(); closeModal();
+  document.getElementById('body' + i).style.display = 'block';
+  toast('✓ Posición ' + ticker + ' añadida', 'ok');
+}
+
+function addAportacion(i) {
+  const amount = parseFloat(document.getElementById('f_amount').value);
+  const fecha = document.getElementById('f_fecha').value;
+  if (isNaN(amount) || amount <= 0) { toast('Introduce un importe válido', 'err'); return; }
+  if (!state.plans[i].aportaciones) state.plans[i].aportaciones = [];
+  state.plans[i].aportaciones.push({ amount, fecha });
+  saveState(); render(); closeModal();
+  document.getElementById('body' + i).style.display = 'block';
+  toast('✓ Aportación de ' + fmtEur(amount) + ' registrada', 'ok');
+}
+
+// ─────────────────────────────────────────
+//  IMPORT / EXPORT
+// ─────────────────────────────────────────
+function exportJSON() {
+  const data = JSON.stringify({ exportDate: new Date().toISOString(), version: 3, ...state }, null, 2);
+  const blob = new Blob([data], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'cartera-' + new Date().toISOString().split('T')[0] + '.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('✓ Archivo descargado', 'ok');
+}
+
+async function exportClipboard() {
+  const data = JSON.stringify({ exportDate: new Date().toISOString(), version: 3, ...state }, null, 2);
+  try {
+    await navigator.clipboard.writeText(data);
+    toast('✓ Copiado al portapapeles', 'ok');
+  } catch(e) {
+    const ta = document.createElement('textarea');
+    ta.value = data; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('✓ Copiado al portapapeles', 'ok');
+  }
+}
+
+function importData(text) {
+  try {
+    const parsed = JSON.parse(text);
+    if (!parsed.plans || !Array.isArray(parsed.plans)) throw new Error();
+    if (!confirm('¿Seguro que quieres reemplazar todos los datos actuales?')) return;
+    state = { plans: parsed.plans };
+    saveState(); render(); closeModal();
+    toast('✓ Cartera importada — ' + state.plans.length + ' planes', 'ok');
+  } catch(e) {
+    toast('✗ Formato inválido. Usa un archivo exportado por esta app.', 'err');
+  }
+}
+
+function importFromText() {
+  const text = document.getElementById('f_json').value.trim();
+  if (!text) { toast('Pega el JSON primero', 'err'); return; }
+  importData(text);
+}
+
+function fileInput(e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => importData(ev.target.result);
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+function ev(e) { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; }
+function drop(e) {
+  e.preventDefault();
+  const file = e.dataTransfer.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => importData(ev.target.result);
+  reader.readAsText(file);
+}
+
+// ─────────────────────────────────────────
+//  TOAST
+// ─────────────────────────────────────────
+let toastTimer;
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => { el.className = 'toast'; }, 3500);
+}
+
+// ─────────────────────────────────────────
+//  INIT
+// ─────────────────────────────────────────
+loadState();
+</script>
+</body>
+</html>
