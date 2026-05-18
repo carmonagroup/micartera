@@ -530,44 +530,116 @@ function renderCharts(){
 }
 
 // ══════════════════════════════════
-//  PRICE REFRESH
+//  PRICE REFRESH — ticker o ISIN
 // ══════════════════════════════════
 async function refreshPrices(){
-  const tickers=[];
-  S.plans.forEach(p=>(p.positions||[]).forEach(pos=>{ if(pos.ticker&&!tickers.includes(pos.ticker)) tickers.push(pos.ticker); }));
-  if(!tickers.length){ showToast('Sin posiciones con ticker para actualizar','err'); return; }
+  // Recopilar posiciones únicas que tengan ticker o ISIN
+  // Clave: usamos ticker si existe, si no el ISIN
+  const posMap = {}; // key -> [{pi, ji}]
+  S.plans.forEach((plan,pi)=>{
+    (plan.positions||[]).forEach((pos,ji)=>{
+      const key = (pos.ticker||'').trim() || (pos.isin||'').trim();
+      if(!key) return;
+      if(!posMap[key]) posMap[key]={ ticker: (pos.ticker||'').trim(), isin: (pos.isin||'').trim(), refs:[] };
+      posMap[key].refs.push({pi,ji});
+    });
+  });
+  const keys=Object.keys(posMap);
+  if(!keys.length){ showToast('Sin posiciones con ticker o ISIN para actualizar','err'); return; }
+
   const icon=document.getElementById('refreshIcon');
   const pill=document.getElementById('statusPill');
   icon.classList.add('spinning');
   pill.textContent='Buscando precios…'; pill.className='status-pill active';
   document.getElementById('refreshBtn').disabled=true;
-  let ok=0,fail=[];
-  for(const t of tickers){
+
+  let ok=0, fail=[];
+  for(const key of keys){
+    const {ticker, isin, refs} = posMap[key];
+    pill.textContent=`Actualizando ${ticker||isin}…`;
     try{
-      const p=await fetchPrice(t);
-      if(p!==null){ S.plans.forEach(plan=>(plan.positions||[]).forEach(pos=>{ if(pos.ticker===t) pos.currentPrice=p; })); ok++; }
-      else fail.push(t);
-    }catch(e){ fail.push(t); }
-    await sleep(350);
+      const price = await fetchPriceByTickerOrISIN(ticker, isin);
+      if(price!==null){
+        refs.forEach(({pi,ji})=>{ S.plans[pi].positions[ji].currentPrice=price; });
+        // Si se resolvió el ISIN a un ticker de Yahoo y la posición no tenía ticker, guardarlo
+        if(!ticker && posMap[key].resolvedTicker){
+          refs.forEach(({pi,ji})=>{ if(!S.plans[pi].positions[ji].ticker) S.plans[pi].positions[ji].ticker=posMap[key].resolvedTicker; });
+        }
+        ok++;
+      } else {
+        fail.push(ticker||isin);
+      }
+    }catch(e){ fail.push(ticker||isin); }
+    await sleep(400);
   }
+
   saveS(); render();
   icon.classList.remove('spinning');
   document.getElementById('refreshBtn').disabled=false;
   document.getElementById('lastUpdate').textContent='Actualizado: '+new Date().toLocaleString('es-ES');
-  if(!fail.length){ pill.textContent='✓ '+ok+' actualizados'; pill.className='status-pill done'; showToast('✓ '+ok+' precios actualizados','ok'); }
-  else{ pill.textContent=ok+' ok · '+fail.length+' fallidos'; pill.className='status-pill error'; showToast('⚠ No encontrados: '+fail.join(', '),'err'); }
+  if(!fail.length){
+    pill.textContent='✓ '+ok+' actualizados'; pill.className='status-pill done';
+    showToast('✓ '+ok+' precios actualizados correctamente','ok');
+  } else {
+    pill.textContent=ok+' ok · '+fail.length+' sin datos'; pill.className='status-pill error';
+    showToast('⚠ Sin datos para: '+fail.join(', '),'err');
+  }
   setTimeout(()=>{ pill.className='status-pill'; pill.textContent=''; },9000);
 }
 
-async function fetchPrice(ticker){
-  const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(ticker)}?interval=1d&range=1d`;
-  const proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-  const res=await fetch(proxy,{signal:AbortSignal.timeout(10000)});
-  if(!res.ok) return null;
-  const json=await res.json();
-  const data=JSON.parse(json.contents);
-  const price=data?.chart?.result?.[0]?.meta?.regularMarketPrice;
-  return price!=null?parseFloat(price.toFixed(4)):null;
+// Intenta obtener precio: primero por ticker, luego por ISIN via búsqueda Yahoo
+async function fetchPriceByTickerOrISIN(ticker, isin){
+  // 1. Si hay ticker, intentar directamente
+  if(ticker){
+    const p = await fetchYahooPrice(ticker);
+    if(p!==null) return p;
+  }
+  // 2. Si hay ISIN, buscar el símbolo Yahoo correspondiente y luego pedir precio
+  if(isin){
+    const symbol = await resolveISINtoSymbol(isin);
+    if(symbol){
+      const p = await fetchYahooPrice(symbol);
+      if(p!==null) return p;
+    }
+  }
+  return null;
+}
+
+// Llama a Yahoo Finance chart API para obtener el precio
+async function fetchYahooPrice(symbol){
+  try{
+    const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
+    const proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const res=await fetch(proxy,{signal:AbortSignal.timeout(10000)});
+    if(!res.ok) return null;
+    const json=await res.json();
+    const data=JSON.parse(json.contents);
+    const price=data?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    return price!=null?parseFloat(price.toFixed(4)):null;
+  }catch(e){ return null; }
+}
+
+// Busca en Yahoo Finance el símbolo a partir de un ISIN usando el endpoint de búsqueda
+async function resolveISINtoSymbol(isin){
+  try{
+    const url=`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(isin)}&quotesCount=5&newsCount=0&enableFuzzyQuery=false`;
+    const proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
+    const res=await fetch(proxy,{signal:AbortSignal.timeout(10000)});
+    if(!res.ok) return null;
+    const json=await res.json();
+    const data=JSON.parse(json.contents);
+    const quotes=data?.finance?.result?.[0]?.quotes||[];
+    // Preferir el resultado con tipo EQUITY o ETF, que no sea en moneda extraña
+    // Orden de preferencia: .DE, .L, sin sufijo (US), luego cualquier otro
+    const preferred=['','.DE','.L','.PA','.MI','.MC','.AS','.BR','.SW','.VI'];
+    let best=null;
+    for(const suffix of preferred){
+      best=quotes.find(q=>q.symbol&&q.symbol.endsWith(suffix)&&(q.quoteType==='EQUITY'||q.quoteType==='ETF'||q.quoteType==='MUTUALFUND'));
+      if(best) break;
+    }
+    if(!best) best=quotes[0]; // fallback: primer resultado
+    return best?.symbol||null;
+  }catch(e){ return null; }
 }
 
 // ══════════════════════════════════
