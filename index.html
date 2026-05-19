@@ -5,257 +5,328 @@
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>MiCartera · CarmonaGroup</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;1,9..144,300&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&display=swap" rel="stylesheet"/>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
+/* ── TOKENS ── */
 [data-theme="dark"]{
-  --bg:#0e0f11;--bg2:#151619;--bg3:#1c1e22;--bg4:#242629;
-  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
-  --text:#e8e6e1;--text2:#9a9894;--text3:#5c5b58;
-  --shadow:0 4px 24px rgba(0,0,0,0.4);
+  --bg:#0e0f11;--bg2:#151619;--bg3:#1c1e22;--bg4:#27292e;
+  --bo:rgba(255,255,255,.07);--bo2:rgba(255,255,255,.13);
+  --tx:#e8e6e1;--tx2:#9a9894;--tx3:#5c5b58;
 }
 [data-theme="light"]{
-  --bg:#f5f4f0;--bg2:#ffffff;--bg3:#eeede9;--bg4:#e4e3de;
-  --border:rgba(0,0,0,0.08);--border2:rgba(0,0,0,0.14);
-  --text:#1a1918;--text2:#5c5a55;--text3:#a09d97;
-  --shadow:0 4px 24px rgba(0,0,0,0.08);
+  --bg:#f4f3ef;--bg2:#ffffff;--bg3:#eeede9;--bg4:#e4e3de;
+  --bo:rgba(0,0,0,.08);--bo2:rgba(0,0,0,.15);
+  --tx:#1a1918;--tx2:#5c5a55;--tx3:#a09d97;
 }
 :root{
-  --green:#22c55e;--green-dim:rgba(34,197,94,0.12);
-  --red:#ef4444;--red-dim:rgba(239,68,68,0.12);
-  --accent:#c8a97e;--accent-dim:rgba(200,169,126,0.13);
-  --blue:#60a5fa;--blue-dim:rgba(96,165,250,0.10);
-  --radius:10px;--radius-lg:15px;
-  --mono:'DM Mono',monospace;--serif:'Fraunces',serif;
+  --gr:#22c55e;--gr2:rgba(34,197,94,.12);
+  --rd:#ef4444;--rd2:rgba(239,68,68,.12);
+  --ac:#c8a97e;--ac2:rgba(200,169,126,.13);
+  --bl:#60a5fa;--bl2:rgba(96,165,250,.10);
+  --or:#f59e0b;--or2:rgba(245,158,11,.12);
+  --r:10px;--rl:14px;
+  --mono:'DM Mono',monospace;
+  --serif:'Fraunces',serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{background:var(--bg);color:var(--text);font-family:var(--mono);font-size:14px;line-height:1.6;min-height:100vh;transition:background .25s,color .25s}
-.shell{max-width:1120px;margin:0 auto;padding:0 24px}
-header{border-bottom:1px solid var(--border);padding:18px 0;margin-bottom:36px;display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
-.logo{display:flex;align-items:baseline;gap:5px}
-.logo-text{font-family:var(--serif);font-size:24px;font-weight:400;color:var(--text);letter-spacing:-.03em}
-.logo-text em{color:var(--accent);font-style:italic}
-.logo-sub{font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase}
-.header-right{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.last-update{font-size:11px;color:var(--text3);white-space:nowrap}
-.status-pill{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border2);color:var(--text2);display:none}
-.status-pill.active{display:inline-block;color:var(--accent);border-color:var(--accent);animation:pulse 1s ease-in-out infinite}
-.status-pill.done{display:inline-block;color:var(--green);border-color:var(--green)}
-.status-pill.error{display:inline-block;color:var(--red);border-color:var(--red)}
-.theme-btn{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:5px 13px;font-size:12px;font-family:var(--mono);cursor:pointer;color:var(--text2);display:inline-flex;align-items:center;gap:6px;transition:all .15s}
-.theme-btn:hover{color:var(--text);border-color:var(--accent)}
-.btn{background:transparent;border:1px solid var(--border2);border-radius:var(--radius);padding:8px 15px;font-size:12px;font-family:var(--mono);cursor:pointer;color:var(--text);display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap}
+body{background:var(--bg);color:var(--tx);font-family:var(--mono);font-size:14px;line-height:1.6;min-height:100vh;transition:background .25s,color .25s}
+
+/* ── SHELL ── */
+.shell{max-width:1140px;margin:0 auto;padding:0 16px 80px}
+@media(min-width:640px){.shell{padding:0 24px 80px}}
+
+/* ── HEADER ── */
+header{border-bottom:1px solid var(--bo);padding:14px 0;margin-bottom:28px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.logo{display:flex;align-items:baseline;gap:4px;flex-shrink:0}
+.logo-t{font-family:var(--serif);font-size:22px;font-weight:400;color:var(--tx);letter-spacing:-.03em}
+.logo-t em{color:var(--ac);font-style:italic}
+.logo-s{font-size:9px;color:var(--tx3);letter-spacing:.1em;text-transform:uppercase}
+.hdr-r{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+.last-upd{font-size:11px;color:var(--tx3);white-space:nowrap;display:none}
+@media(min-width:640px){.last-upd{display:inline}}
+.pill{font-size:11px;padding:3px 9px;border-radius:20px;border:1px solid var(--bo2);color:var(--tx2);display:none}
+.pill.act{display:inline-block;color:var(--ac);border-color:var(--ac);animation:pulse 1s ease-in-out infinite}
+.pill.ok{display:inline-block;color:var(--gr);border-color:var(--gr)}
+.pill.err{display:inline-block;color:var(--rd);border-color:var(--rd)}
+
+/* ── BUTTONS ── */
+.btn{background:transparent;border:1px solid var(--bo2);border-radius:var(--r);padding:7px 13px;font-size:12px;font-family:var(--mono);cursor:pointer;color:var(--tx);display:inline-flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap;flex-shrink:0}
 .btn:hover{background:var(--bg3)}
 .btn:active{transform:scale(.97)}
-.btn.primary{background:var(--accent);color:#1a1200;border-color:var(--accent);font-weight:500}
-.btn.primary:hover{background:#d4b98a}
-.btn.green{border-color:var(--green);color:var(--green)}.btn.green:hover{background:var(--green-dim)}
-.btn.red{border-color:var(--red);color:var(--red)}.btn.red:hover{background:var(--red-dim)}
-.btn.blue{border-color:var(--blue);color:var(--blue)}.btn.blue:hover{background:var(--blue-dim)}
-.btn.ico{padding:7px;border-radius:8px}
+.btn.prim{background:var(--ac);color:#1a1200;border-color:var(--ac);font-weight:500}
+.btn.prim:hover{opacity:.88}
+.btn.gr{border-color:var(--gr);color:var(--gr)}.btn.gr:hover{background:var(--gr2)}
+.btn.rd{border-color:var(--rd);color:var(--rd)}.btn.rd:hover{background:var(--rd2)}
+.btn.bl{border-color:var(--bl);color:var(--bl)}.btn.bl:hover{background:var(--bl2)}
+.btn.or{border-color:var(--or);color:var(--or)}.btn.or:hover{background:var(--or2)}
+.btn.ico{padding:6px;border-radius:8px}
 .btn svg{width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
-.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:28px}
-.metric{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;position:relative;overflow:hidden;transition:background .25s,border-color .25s}
-.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--accent);opacity:.4}
-.metric.gline::before{background:var(--green);opacity:.7}
-.metric.rline::before{background:var(--red);opacity:.7}
-.ml{font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--text3);margin-bottom:10px}
-.mv{font-family:var(--serif);font-size:26px;font-weight:300;color:var(--text);line-height:1}
-.mv.pos{color:var(--green)}.mv.neg{color:var(--red)}
-.ms{font-size:11px;color:var(--text3);margin-top:6px}
-.ms.pos{color:var(--green)}.ms.neg{color:var(--red)}
-.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px}
-@media(max-width:600px){.charts-row{grid-template-columns:1fr}}
-.chart-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:background .25s}
-.chart-title{font-size:10px;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:14px}
-.chart-wrap{position:relative;height:200px}
-.section{margin-bottom:36px}
-.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
-.sec-head h2{font-family:var(--serif);font-size:17px;font-weight:300;letter-spacing:-.01em}
-.plan-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:12px;overflow:hidden;transition:border-color .2s,background .25s}
-.plan-card:hover{border-color:var(--border2)}
-.plan-hdr{display:flex;align-items:center;justify-content:space-between;padding:16px 20px;cursor:pointer;gap:12px;flex-wrap:wrap}
+.theme-btn{background:var(--bg3);border:1px solid var(--bo2);border-radius:20px;padding:5px 11px;font-size:11px;font-family:var(--mono);cursor:pointer;color:var(--tx2);display:inline-flex;align-items:center;gap:5px;transition:all .15s}
+.theme-btn:hover{color:var(--tx);border-color:var(--ac)}
+.theme-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+
+/* ── TABS ── */
+.tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--bo);padding-bottom:0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tab{padding:9px 16px;font-size:12px;font-family:var(--mono);cursor:pointer;color:var(--tx3);border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all .15s;border-radius:var(--r) var(--r) 0 0}
+.tab:hover{color:var(--tx2);background:var(--bg3)}
+.tab.active{color:var(--tx);border-bottom-color:var(--ac)}
+
+/* ── METRICS ── */
+.metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:22px}
+@media(min-width:640px){.metrics{grid-template-columns:repeat(4,1fr)}}
+.metric{background:var(--bg2);border:1px solid var(--bo);border-radius:var(--rl);padding:14px 16px;position:relative;overflow:hidden;transition:background .25s}
+.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--ac);opacity:.4}
+.metric.gline::before{background:var(--gr);opacity:.7}
+.metric.rline::before{background:var(--rd);opacity:.7}
+.metric.oline::before{background:var(--or);opacity:.7}
+.ml{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--tx3);margin-bottom:7px}
+.mv{font-family:var(--serif);font-size:22px;font-weight:300;color:var(--tx);line-height:1}
+@media(min-width:640px){.mv{font-size:26px}}
+.mv.pos{color:var(--gr)}.mv.neg{color:var(--rd)}
+.ms{font-size:10px;color:var(--tx3);margin-top:5px}
+.ms.pos{color:var(--gr)}.ms.neg{color:var(--rd)}
+
+/* ── CHARTS ── */
+.charts-row{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:22px}
+@media(min-width:640px){.charts-row{grid-template-columns:1fr 1fr}}
+.chart-card{background:var(--bg2);border:1px solid var(--bo);border-radius:var(--rl);padding:16px;transition:background .25s}
+.chart-title{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--tx3);margin-bottom:12px}
+.chart-wrap{position:relative;height:180px}
+
+/* ── SECTION ── */
+.sec-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--bo);flex-wrap:wrap;gap:8px}
+.sec-head h2{font-family:var(--serif);font-size:16px;font-weight:300;letter-spacing:-.01em}
+.sec-acts{display:flex;gap:7px;flex-wrap:wrap}
+
+/* ── PLAN CARD ── */
+.plan-card{background:var(--bg2);border:1px solid var(--bo);border-radius:var(--rl);margin-bottom:10px;overflow:hidden;transition:border-color .2s,background .25s}
+.plan-card:hover{border-color:var(--bo2)}
+.plan-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:14px 16px;cursor:pointer;gap:10px;flex-wrap:wrap}
 .plan-hdr:hover{background:rgba(128,128,128,.04)}
-.pname{font-family:var(--serif);font-size:16px;font-weight:300}
-.pmeta-sub{font-size:11px;color:var(--text3);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
-.plan-kpis{display:flex;gap:20px;align-items:center;flex-wrap:wrap}
+.plan-left h3{font-family:var(--serif);font-size:15px;font-weight:300;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.plan-sub{font-size:10px;color:var(--tx3);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+.plan-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.plan-kpis{display:flex;gap:14px;flex-wrap:wrap}
 .kpi{text-align:right}
-.kv{font-size:14px;font-weight:500}
-.kl{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;margin-top:1px}
+.kv{font-size:13px;font-weight:500}
+.kl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.04em}
 .plan-acts{display:flex;gap:5px;flex-wrap:wrap}
-.plan-body{display:none;padding:0 20px 20px;border-top:1px solid var(--border)}
-.type-chip{display:inline-block;font-size:10px;padding:2px 8px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;font-weight:500;margin-left:8px;vertical-align:middle}
-.tc-pct{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(96,165,250,.25)}
-.tc-acc{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(200,169,126,.25)}
-.pos-table{width:100%;border-collapse:collapse;margin-top:14px}
-.pos-table th{font-size:10px;letter-spacing:.07em;text-transform:uppercase;color:var(--text3);font-weight:400;padding:0 0 10px;text-align:left;border-bottom:1px solid var(--border)}
-.pos-table td{padding:10px 0;border-bottom:1px solid var(--border);vertical-align:middle}
+.plan-body{display:none;border-top:1px solid var(--bo);padding:14px 16px}
+
+/* ── TYPE CHIP ── */
+.chip{display:inline-flex;align-items:center;font-size:9px;padding:2px 7px;border-radius:20px;letter-spacing:.05em;text-transform:uppercase;font-weight:500;border:1px solid}
+.chip-pct{background:var(--bl2);color:var(--bl);border-color:rgba(96,165,250,.25)}
+.chip-acc{background:var(--ac2);color:var(--ac);border-color:rgba(200,169,126,.25)}
+.chip-sav{background:var(--or2);color:var(--or);border-color:rgba(245,158,11,.25)}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin-top:12px}
+.pos-table{width:100%;border-collapse:collapse;min-width:480px}
+.pos-table th{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3);font-weight:400;padding:0 0 8px;text-align:left;border-bottom:1px solid var(--bo)}
+.pos-table td{padding:9px 0;border-bottom:1px solid var(--bo);vertical-align:middle}
 .pos-table tr:last-child td{border-bottom:none}
 .pos-table td:not(:first-child),.pos-table th:not(:first-child){padding-left:10px}
-.name-cell .nc{font-weight:500;font-size:13px}
-.name-cell .ni{font-size:10px;color:var(--text3);letter-spacing:.04em;margin-top:1px}
-.badge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;font-weight:500}
-.badge.etf{background:rgba(34,197,94,.1);color:#22c55e;border:1px solid rgba(34,197,94,.2)}
-.badge.accion{background:var(--blue-dim);color:var(--blue);border:1px solid rgba(96,165,250,.2)}
-.badge.crypto{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(200,169,126,.2)}
-.badge.fondo{background:rgba(196,181,253,.1);color:#c4b5fd;border:1px solid rgba(196,181,253,.2)}
-.badge.otro{background:var(--bg4);color:var(--text2);border:1px solid var(--border2)}
-.pnl-v{font-size:13px}
-.pnl-p{font-size:11px;margin-top:1px}
-.cpos{color:var(--green)}.cneg{color:var(--red)}
-.price-in{background:var(--bg3);border:1px solid var(--border2);border-radius:7px;padding:4px 8px;color:var(--text);font-family:var(--mono);font-size:13px;width:90px;transition:border-color .15s}
-.price-in:focus{outline:none;border-color:var(--accent)}
-.alloc-bar-wrap{width:72px;height:5px;background:var(--bg4);border-radius:3px;margin-top:4px}
-.alloc-bar{height:5px;background:var(--accent);border-radius:3px;transition:width .3s}
-.ap-section{margin-top:18px;padding-top:14px;border-top:1px solid var(--border)}
-.ap-label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:10px}
-.ap-chips{display:flex;flex-wrap:wrap;gap:8px}
-.ap-chip{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:5px 12px;font-size:12px;display:flex;align-items:center;gap:8px;color:var(--text2)}
-.ap-date{font-size:10px;color:var(--text3)}
-.ap-del{background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;line-height:1;padding:0;transition:color .15s}
-.ap-del:hover{color:var(--red)}
-.pct-sum{font-size:12px;padding:8px 12px;background:var(--bg3);border-radius:var(--radius);border:1px solid var(--border);margin-top:10px;margin-bottom:2px}
-.io-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:600px){.io-grid{grid-template-columns:1fr}}
-.io-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:background .25s}
-.io-card h3{font-size:13px;font-weight:500;margin-bottom:6px;display:flex;align-items:center;gap:7px}
-.io-card p{font-size:12px;color:var(--text3);margin-bottom:14px;line-height:1.7}
-.io-btns{display:flex;gap:8px;flex-wrap:wrap}
-.drop-zone{border:1px dashed var(--border2);border-radius:var(--radius);padding:18px;text-align:center;color:var(--text3);font-size:12px;cursor:pointer;transition:all .15s;margin-bottom:10px}
-.drop-zone:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-dim)}
-.drop-zone svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.5;margin:0 auto 8px;display:block}
-.info-box{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;transition:background .25s}
-.info-box p{font-size:12px;color:var(--text2);margin:0;line-height:1.9}
-code{font-family:var(--mono);font-size:11px;background:var(--bg4);padding:1px 5px;border-radius:4px;color:var(--accent)}
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(5px);z-index:200;align-items:center;justify-content:center;padding:20px}
-.modal-overlay.open{display:flex}
-.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:var(--radius-lg);padding:28px;width:100%;max-width:540px;max-height:90vh;overflow-y:auto;animation:slideUp .2s ease;transition:background .25s}
-@keyframes slideUp{from{transform:translateY(18px);opacity:0}to{transform:translateY(0);opacity:1}}
-.modal h3{font-family:var(--serif);font-size:19px;font-weight:300;margin-bottom:20px}
-.fg{margin-bottom:15px}
-.fg label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:5px}
-.fg input,.fg select,.fg textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:9px 12px;font-size:13px;font-family:var(--mono);color:var(--text);outline:none;transition:border-color .15s}
-.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
-.fg select option{background:var(--bg3)}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.nc{font-weight:500;font-size:12px}
+.ni{font-size:10px;color:var(--tx3);margin-top:1px;letter-spacing:.03em}
+.badge{display:inline-block;font-size:9px;padding:2px 6px;border-radius:20px;letter-spacing:.04em;text-transform:uppercase;font-weight:500;border:1px solid;white-space:nowrap}
+.badge.etf{background:rgba(34,197,94,.1);color:#22c55e;border-color:rgba(34,197,94,.2)}
+.badge.accion{background:var(--bl2);color:var(--bl);border-color:rgba(96,165,250,.2)}
+.badge.crypto{background:var(--ac2);color:var(--ac);border-color:rgba(200,169,126,.2)}
+.badge.fondo{background:rgba(196,181,253,.1);color:#c4b5fd;border-color:rgba(196,181,253,.2)}
+.badge.otro{background:var(--bg4);color:var(--tx2);border-color:var(--bo2)}
+.pnl-v{font-size:12px}
+.pnl-p{font-size:10px;margin-top:1px}
+.cpos{color:var(--gr)}.cneg{color:var(--rd)}
+.price-in{background:var(--bg3);border:1px solid var(--bo2);border-radius:7px;padding:4px 7px;color:var(--tx);font-family:var(--mono);font-size:12px;width:80px;transition:border-color .15s}
+.price-in:focus{outline:none;border-color:var(--ac)}
+.alloc-bar-w{width:60px;height:4px;background:var(--bg4);border-radius:2px;margin-top:3px}
+.alloc-bar{height:4px;background:var(--ac);border-radius:2px}
+.pct-sum{font-size:11px;padding:7px 11px;background:var(--bg3);border-radius:var(--r);border:1px solid var(--bo);margin-top:8px;margin-bottom:4px}
+
+/* ── APORTACIONES ── */
+.ap-wrap{margin-top:14px;padding-top:12px;border-top:1px solid var(--bo)}
+.ap-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:8px}
+.ap-chips{display:flex;flex-wrap:wrap;gap:7px}
+.ap-chip{background:var(--bg3);border:1px solid var(--bo);border-radius:var(--r);padding:4px 10px;font-size:11px;display:flex;align-items:center;gap:7px;color:var(--tx2)}
+.ap-date{font-size:10px;color:var(--tx3)}
+.ap-del{background:none;border:none;cursor:pointer;color:var(--tx3);font-size:14px;line-height:1;padding:0;transition:color .15s}
+.ap-del:hover{color:var(--rd)}
+
+/* ── SAVINGS CARD ── */
+.sav-card{background:var(--bg2);border:1px solid var(--bo);border-radius:var(--rl);margin-bottom:10px;overflow:hidden;transition:background .25s}
+.sav-body{padding:14px 16px}
+.sav-metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:12px}
+@media(min-width:480px){.sav-metrics{grid-template-columns:repeat(4,1fr)}}
+.sav-m{background:var(--bg3);border-radius:var(--r);padding:10px 12px}
+.sav-m .sl{font-size:10px;color:var(--tx3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:4px}
+.sav-m .sv{font-size:16px;font-family:var(--serif);font-weight:300;color:var(--tx)}
+.sav-m .sv.pos{color:var(--gr)}
+
+/* ── IO CARDS ── */
+.io-grid{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:640px){.io-grid{grid-template-columns:1fr 1fr}}
+.io-card{background:var(--bg2);border:1px solid var(--bo);border-radius:var(--rl);padding:16px;transition:background .25s}
+.io-card h3{font-size:12px;font-weight:500;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.io-card p{font-size:11px;color:var(--tx3);margin-bottom:12px;line-height:1.7}
+.io-btns{display:flex;gap:7px;flex-wrap:wrap}
+.drop-zone{border:1px dashed var(--bo2);border-radius:var(--r);padding:16px;text-align:center;color:var(--tx3);font-size:11px;cursor:pointer;transition:all .15s;margin-bottom:8px}
+.drop-zone:hover{border-color:var(--ac);color:var(--ac);background:var(--ac2)}
+.drop-zone svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.5;margin:0 auto 6px;display:block}
+
+/* ── INFO BOX ── */
+.info-box{background:var(--bg2);border:1px solid var(--bo);border-radius:var(--rl);padding:16px;transition:background .25s}
+.info-box p{font-size:11px;color:var(--tx2);line-height:1.9}
+code{font-family:var(--mono);font-size:10px;background:var(--bg4);padding:1px 5px;border-radius:4px;color:var(--ac)}
+
+/* ── MODAL ── */
+.modal-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);backdrop-filter:blur(5px);z-index:200;align-items:center;justify-content:center;padding:16px}
+.modal-ov.open{display:flex}
+.modal{background:var(--bg2);border:1px solid var(--bo2);border-radius:var(--rl);padding:22px;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;animation:slideUp .2s ease;transition:background .25s}
+@keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
+.modal h3{font-family:var(--serif);font-size:18px;font-weight:300;margin-bottom:18px}
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:10px;text-transform:uppercase;letter-spacing:.06em;color:var(--tx3);margin-bottom:4px}
+.fg input,.fg select,.fg textarea{width:100%;background:var(--bg3);border:1px solid var(--bo2);border-radius:var(--r);padding:8px 11px;font-size:13px;font-family:var(--mono);color:var(--tx);outline:none;transition:border-color .15s}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--ac)}
+.fg select option{background:var(--bg2)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 @media(max-width:480px){.frow{grid-template-columns:1fr}}
-.mactions{display:flex;gap:8px;justify-content:flex-end;margin-top:22px}
-.warn-box{background:var(--red-dim);border:1px solid rgba(239,68,68,.2);border-radius:var(--radius);padding:10px 14px;font-size:12px;color:var(--red);margin-bottom:4px}
-.hint{font-size:11px;color:var(--text3);margin-top:4px;line-height:1.5}
-.ap-pos-block{border:1px solid var(--border);border-radius:var(--radius);padding:12px;margin-bottom:10px;background:var(--bg3)}
-.ap-pos-label{font-size:12px;font-weight:500;margin-bottom:10px;color:var(--text2)}
-.ap-pos-meta{font-size:10px;color:var(--text3);margin-bottom:8px}
-.toast{position:fixed;bottom:24px;right:24px;background:var(--bg3);border:1px solid var(--border2);border-radius:var(--radius);padding:11px 17px;font-size:13px;color:var(--text);z-index:300;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;max-width:340px}
+.macts{display:flex;gap:7px;justify-content:flex-end;margin-top:18px;flex-wrap:wrap}
+.hint{font-size:10px;color:var(--tx3);margin-top:3px;line-height:1.5}
+.warn{background:var(--rd2);border:1px solid rgba(239,68,68,.2);border-radius:var(--r);padding:9px 12px;font-size:11px;color:var(--rd);margin-bottom:4px}
+.divider{border:none;border-top:1px solid var(--bo);margin:14px 0}
+.ap-pos-block{border:1px solid var(--bo);border-radius:var(--r);padding:10px 12px;margin-bottom:8px;background:var(--bg3)}
+.ap-pos-name{font-size:12px;font-weight:500;margin-bottom:2px}
+.ap-pos-meta{font-size:10px;color:var(--tx3);margin-bottom:8px}
+.calc-preview{background:var(--bg4);border-radius:var(--r);padding:8px 12px;font-size:11px;color:var(--tx2);margin-top:8px;line-height:1.7}
+.calc-preview strong{color:var(--ac)}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:20px;right:16px;background:var(--bg3);border:1px solid var(--bo2);border-radius:var(--r);padding:10px 15px;font-size:12px;color:var(--tx);z-index:300;opacity:0;transform:translateY(8px);transition:all .25s;pointer-events:none;max-width:300px}
 .toast.show{opacity:1;transform:translateY(0)}
-.toast.ok{border-color:rgba(34,197,94,.35);color:var(--green)}
-.toast.err{border-color:rgba(239,68,68,.35);color:var(--red)}
-footer{border-top:1px solid var(--border);margin-top:60px;padding:22px 0 32px;text-align:center}
-footer p{font-size:11px;color:var(--text3);letter-spacing:.04em}
-footer strong{color:var(--text2)}
-.empty{text-align:center;padding:40px 20px;color:var(--text3)}
-.empty svg{width:36px;height:36px;stroke:currentColor;fill:none;stroke-width:1.2;margin:0 auto 12px;display:block;opacity:.35}
+.toast.ok{border-color:rgba(34,197,94,.35);color:var(--gr)}
+.toast.err{border-color:rgba(239,68,68,.35);color:var(--rd)}
+
+/* ── FOOTER ── */
+footer{border-top:1px solid var(--bo);margin-top:50px;padding:18px 0 28px;text-align:center}
+footer p{font-size:10px;color:var(--tx3);letter-spacing:.04em}
+footer strong{color:var(--tx2)}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:30px 16px;color:var(--tx3)}
+.empty svg{width:32px;height:32px;stroke:currentColor;fill:none;stroke-width:1.2;margin:0 auto 10px;display:block;opacity:.3}
+
+/* ── MISC ── */
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes spin{from{transform:rotate(0)}to{transform:rotate(360deg)}}
 .spinning{animation:spin .8s linear infinite;display:inline-block}
-@media(max-width:700px){.kpi:nth-child(n+2){display:none}}
-@media(max-width:500px){.metrics{grid-template-columns:1fr 1fr}}
-::-webkit-scrollbar{width:5px}
+::-webkit-scrollbar{width:4px}
 ::-webkit-scrollbar-track{background:var(--bg)}
-::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:3px}
+::-webkit-scrollbar-thumb{background:var(--bg4);border-radius:2px}
+.tab-content{display:none}.tab-content.active{display:block}
 </style>
 </head>
 <body>
 <div class="shell">
 
+<!-- HEADER -->
 <header>
   <div class="logo">
-    <span class="logo-text">Mi<em>Cartera</em></span>
-    <span class="logo-sub">by CarmonaGroup</span>
+    <span class="logo-t">Mi<em>Cartera</em></span>
+    <span class="logo-s">by CarmonaGroup</span>
   </div>
-  <div class="header-right">
-    <span class="last-update" id="lastUpdate">Sin actualizar</span>
-    <span class="status-pill" id="statusPill"></span>
-    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">
-      <svg id="themeIcon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
-        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-      </svg>
-      <span id="themeLabel">Modo claro</span>
+  <div class="hdr-r">
+    <span class="last-upd" id="lastUpd">Sin actualizar</span>
+    <span class="pill" id="pill"></span>
+    <button class="theme-btn" onclick="toggleTheme()">
+      <svg id="thIcon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+      <span id="thLbl">Modo claro</span>
     </button>
     <button class="btn" onclick="openModal('addPlan')">
       <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Nuevo plan
     </button>
-    <button class="btn primary" id="refreshBtn" onclick="refreshPrices()">
-      <svg id="refreshIcon" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-      Actualizar precios
+    <button class="btn prim" id="refreshBtn" onclick="refreshPrices()">
+      <svg id="refreshIco" viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+      <span class="hide-xs">Actualizar</span>
     </button>
   </div>
 </header>
 
-<div class="metrics">
-  <div class="metric">
-    <div class="ml">Capital invertido</div>
-    <div class="mv" id="mInv">€0,00</div>
-    <div class="ms">Total aportado + compras</div>
-  </div>
-  <div class="metric" id="mCardVal">
-    <div class="ml">Valor actual</div>
-    <div class="mv" id="mVal">€0,00</div>
-    <div class="ms">A precio de mercado</div>
-  </div>
-  <div class="metric" id="mCardPnl">
-    <div class="ml">Beneficio / Pérdida</div>
-    <div class="mv" id="mPnl">€0,00</div>
-    <div class="ms" id="mPct">—</div>
-  </div>
-  <div class="metric">
-    <div class="ml">Posiciones abiertas</div>
-    <div class="mv" id="mPos">0</div>
-    <div class="ms" id="mPlan">0 planes</div>
-  </div>
+<!-- RESUMEN GLOBAL -->
+<div class="metrics" id="metricsGlobal">
+  <div class="metric"><div class="ml">Total invertido</div><div class="mv" id="gInv">€0,00</div><div class="ms">Planes + ahorros</div></div>
+  <div class="metric" id="gCardVal"><div class="ml">Valor actual</div><div class="mv" id="gVal">€0,00</div><div class="ms">Mercado + ahorros</div></div>
+  <div class="metric" id="gCardPnl"><div class="ml">Beneficio / Pérdida</div><div class="mv" id="gPnl">€0,00</div><div class="ms" id="gPct">—</div></div>
+  <div class="metric oline"><div class="ml">Cuenta remunerada</div><div class="mv pos" id="gSav">€0,00</div><div class="ms" id="gSavInt">intereses acumulados</div></div>
 </div>
 
-<div class="charts-row" id="chartsRow" style="display:none">
-  <div class="chart-card">
-    <div class="chart-title">Distribución por plan (valor actual)</div>
-    <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
-  </div>
-  <div class="chart-card">
-    <div class="chart-title">Rentabilidad por plan (%)</div>
-    <div class="chart-wrap"><canvas id="barChart"></canvas></div>
-  </div>
+<!-- TABS -->
+<div class="tabs">
+  <button class="tab active" onclick="switchTab('planes',this)">📊 Planes de inversión</button>
+  <button class="tab" onclick="switchTab('ahorros',this)">🏦 Cuenta remunerada</button>
+  <button class="tab" onclick="switchTab('backup',this)">💾 Copias de seguridad</button>
+  <button class="tab" onclick="switchTab('ayuda',this)">❔ Ayuda</button>
 </div>
 
-<div class="section">
-  <div class="sec-head"><h2>Planes de inversión</h2></div>
-  <div id="plansContainer">
-    <div class="empty">
-      <svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-      Sin planes. Crea tu primer plan de inversión arriba.
+<!-- TAB: PLANES -->
+<div class="tab-content active" id="tab-planes">
+  <div class="charts-row" id="chartsRow" style="display:none">
+    <div class="chart-card">
+      <div class="chart-title">Distribución por plan</div>
+      <div class="chart-wrap"><canvas id="donutChart"></canvas></div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Rentabilidad por plan (%)</div>
+      <div class="chart-wrap"><canvas id="barChart"></canvas></div>
     </div>
   </div>
+  <div class="sec-head">
+    <h2>Mis planes</h2>
+    <div class="sec-acts">
+      <button class="btn" onclick="openModal('addPlan')">
+        <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Nuevo plan
+      </button>
+    </div>
+  </div>
+  <div id="plansContainer">
+    <div class="empty"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Sin planes todavía. Crea el primero.</div>
+  </div>
 </div>
 
-<div class="section">
-  <div class="sec-head"><h2>Copia de seguridad</h2></div>
+<!-- TAB: AHORROS -->
+<div class="tab-content" id="tab-ahorros">
+  <div class="sec-head">
+    <h2>Cuentas remuneradas</h2>
+    <button class="btn or" onclick="openModal('addSaving')">
+      <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Añadir cuenta
+    </button>
+  </div>
+  <div id="savingsContainer">
+    <div class="empty"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Sin cuentas remuneradas. Añade la primera.</div>
+  </div>
+</div>
+
+<!-- TAB: BACKUP -->
+<div class="tab-content" id="tab-backup">
   <div class="io-grid">
     <div class="io-card">
       <h3>
-        <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Exportar datos
       </h3>
-      <p>Descarga tus planes, posiciones y aportaciones como archivo .json.</p>
+      <p>Descarga todos tus planes, posiciones, aportaciones y cuentas de ahorro en formato .json.</p>
       <div class="io-btns">
-        <button class="btn green" onclick="exportJSON()">
+        <button class="btn gr" onclick="exportJSON()">
           <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           Descargar .json
         </button>
-        <button class="btn" onclick="exportClipboard()">
+        <button class="btn" onclick="exportClip()">
           <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           Copiar
         </button>
@@ -263,15 +334,15 @@ footer strong{color:var(--text2)}
     </div>
     <div class="io-card">
       <h3>
-        <svg viewBox="0 0 24 24" style="width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <svg viewBox="0 0 24 24" style="width:14px;height:14px;stroke:currentColor;fill:none;stroke-width:1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Importar datos
       </h3>
-      <p>Restaura tu cartera. <strong style="color:var(--red)">Reemplaza los datos actuales.</strong></p>
+      <p>Restaura tu cartera. <strong style="color:var(--rd)">Reemplaza los datos actuales.</strong></p>
       <div class="drop-zone" onclick="document.getElementById('fileIn').click()" ondragover="dzOver(event)" ondrop="dzDrop(event)">
         <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Arrastra tu .json aquí o haz clic
       </div>
-      <input type="file" id="fileIn" accept=".json" style="display:none" onchange="fileInputChange(event)"/>
+      <input type="file" id="fileIn" accept=".json" style="display:none" onchange="fileIn(event)"/>
       <button class="btn" onclick="openModal('importText')">
         <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
         Pegar JSON
@@ -280,73 +351,83 @@ footer strong{color:var(--text2)}
   </div>
 </div>
 
-<div class="section">
-  <div class="sec-head"><h2>Guía de tickers</h2></div>
+<!-- TAB: AYUDA -->
+<div class="tab-content" id="tab-ayuda">
   <div class="info-box">
     <p>
-      Los precios se obtienen de <strong style="color:var(--accent)">Yahoo Finance</strong>. Introduce el ticker de Yahoo (campo separado del ISIN) al añadir cada posición.<br><br>
-      <strong style="color:var(--text)">ETFs:</strong> <code>VWCE.DE</code> &nbsp;·&nbsp; <code>CSPX.L</code> &nbsp;·&nbsp; <code>SXR8.DE</code> &nbsp;·&nbsp; <code>EQQQ.L</code><br>
-      <strong style="color:var(--text)">Acciones:</strong> <code>MSFT</code> &nbsp;·&nbsp; <code>AAPL</code> &nbsp;·&nbsp; <code>NVDA</code> &nbsp;·&nbsp; <code>MC.PA</code><br>
-      <strong style="color:var(--text)">Cripto:</strong> <code>BTC-USD</code> &nbsp;·&nbsp; <code>ETH-USD</code> &nbsp;·&nbsp; <code>SOL-USD</code><br><br>
-      <span style="color:var(--text3);font-size:11px">Si un ticker no se encuentra, el precio no se actualiza y se mantiene el último valor. Puedes buscarlo en finance.yahoo.com</span>
+      <strong style="color:var(--tx)">Actualización de precios</strong><br>
+      Los precios se obtienen de <strong style="color:var(--ac)">Yahoo Finance</strong>. La app busca automáticamente por <strong style="color:var(--tx)">ticker</strong> o por <strong style="color:var(--tx)">ISIN</strong> si no tienes ticker.<br><br>
+      <strong style="color:var(--tx)">ETFs:</strong> <code>VWCE.DE</code> · <code>CSPX.L</code> · <code>SXR8.DE</code> · <code>EQQQ.L</code><br>
+      <strong style="color:var(--tx)">Acciones:</strong> <code>MSFT</code> · <code>AAPL</code> · <code>NVDA</code> · <code>MC.PA</code><br>
+      <strong style="color:var(--tx)">Cripto:</strong> <code>BTC-USD</code> · <code>ETH-USD</code> · <code>SOL-USD</code><br><br>
+      <strong style="color:var(--tx)">Plan por porcentaje (XTB)</strong><br>
+      Cuando añades una aportación, introduces el importe total. La app calcula automáticamente cuánto dinero va a cada activo según su % asignado, y estima las participaciones compradas al precio actual. El precio medio de compra se recalcula con media ponderada.<br><br>
+      <strong style="color:var(--tx)">Cuenta remunerada</strong><br>
+      Introduce el capital depositado, el TAE y si los intereses son mensuales o anuales. La app calcula los intereses acumulados desde la fecha de inicio hasta hoy de forma automática.<br><br>
+      <span style="color:var(--tx3);font-size:10px">Si un ticker no se encuentra en Yahoo, el precio no se actualiza y se mantiene el último valor. Puedes buscarlo en finance.yahoo.com</span>
     </p>
   </div>
 </div>
 
-</div>
+</div><!-- /shell -->
 
 <footer>
-  <p>© <span id="yr"></span> <strong>CarmonaGroup</strong> &nbsp;·&nbsp; MiCartera &nbsp;·&nbsp; Todos los derechos reservados</p>
+  <p>© <span id="yr"></span> <strong>CarmonaGroup</strong> · MiCartera · Todos los derechos reservados</p>
 </footer>
 
-<div class="modal-overlay" id="modalOverlay" onclick="overlayClick(event)">
-  <div class="modal">
-    <h3 id="modalTitle"></h3>
-    <div id="modalContent"></div>
-  </div>
+<!-- MODAL -->
+<div class="modal-ov" id="modalOv" onclick="ovClick(event)">
+  <div class="modal"><h3 id="mTitle"></h3><div id="mContent"></div></div>
 </div>
 
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
 
 <script>
-// ══════════════════════════════════
+// ════════════════════════════════════════
 //  STATE
-// ══════════════════════════════════
-let S = { plans:[] };
-const SK = 'micartera_v4';
-function loadS(){ try{ const r=localStorage.getItem(SK); if(r) S=JSON.parse(r); }catch(e){} render(); }
+// ════════════════════════════════════════
+let S = { plans:[], savings:[] };
+const SK = 'mc_v5';
+function loadS(){ try{ const r=localStorage.getItem(SK); if(r) S=JSON.parse(r); if(!S.savings) S.savings=[]; }catch(e){} render(); }
 function saveS(){ try{ localStorage.setItem(SK,JSON.stringify(S)); }catch(e){} }
 
-// ══════════════════════════════════
+// ════════════════════════════════════════
 //  THEME
-// ══════════════════════════════════
+// ════════════════════════════════════════
 let dark=true;
-function initTheme(){
-  const s=localStorage.getItem('mc_theme');
-  dark = s ? s==='dark' : true;
-  applyTheme(false);
-}
+function initTheme(){ const s=localStorage.getItem('mc_th'); dark=s?s==='dark':true; applyTheme(false); }
 function applyTheme(save=true){
-  document.documentElement.setAttribute('data-theme', dark?'dark':'light');
-  document.getElementById('themeLabel').textContent = dark?'Modo claro':'Modo oscuro';
-  if(save) localStorage.setItem('mc_theme', dark?'dark':'light');
+  document.documentElement.setAttribute('data-theme',dark?'dark':'light');
+  document.getElementById('thLbl').textContent=dark?'Modo claro':'Modo oscuro';
+  if(save) localStorage.setItem('mc_th',dark?'dark':'light');
   renderCharts();
 }
 function toggleTheme(){ dark=!dark; applyTheme(); }
 
-// ══════════════════════════════════
+// ════════════════════════════════════════
+//  TABS
+// ════════════════════════════════════════
+function switchTab(id,btn){
+  document.querySelectorAll('.tab-content').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ════════════════════════════════════════
 //  FORMAT
-// ══════════════════════════════════
+// ════════════════════════════════════════
 const fE=(n,d=2)=>'€'+(parseFloat(n)||0).toLocaleString('es-ES',{minimumFractionDigits:d,maximumFractionDigits:d});
 const fP=n=>{ const v=parseFloat(n)||0; return (v>=0?'+':'')+v.toFixed(2)+'%'; };
 const tL=t=>({etf:'ETF',accion:'Acción',crypto:'Cripto',fondo:'Fondo',otro:'Otro'}[t]||t);
-const esc=s=>String(s||'').replace(/"/g,'&quot;').replace(/</g,'&lt;');
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;');
 const gv=id=>{ const e=document.getElementById(id); return e?e.value:''; };
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 
-// ══════════════════════════════════
-//  CALC
-// ══════════════════════════════════
+// ════════════════════════════════════════
+//  CALC — PLAN
+// ════════════════════════════════════════
 function calcPlan(p){
   const totalAp=(p.aportaciones||[]).reduce((s,a)=>s+(parseFloat(a.amount)||0),0);
   let invested=0, currentVal=0;
@@ -354,70 +435,112 @@ function calcPlan(p){
     const sh=parseFloat(pos.shares)||0;
     const bp=parseFloat(pos.buyPrice)||0;
     const cp=parseFloat(pos.currentPrice)||0;
-    invested+=sh*bp; currentVal+=sh*cp;
+    // dineroInv: si existe, lo usa directamente (más preciso)
+    const di=parseFloat(pos.dineroInv);
+    invested   += isNaN(di) ? sh*bp : di;
+    currentVal += sh*cp;
   });
+  // Si no hay posiciones con precio, usar aportaciones como base
   if(!invested && totalAp) invested=totalAp;
+  if(!currentVal && invested) currentVal=invested;
   const pnl=currentVal-invested;
   const pnlPct=invested>0?(pnl/invested)*100:0;
   return{invested,currentVal,pnl,pnlPct,totalAp};
 }
-function calcTotal(){
-  let inv=0,val=0;
-  S.plans.forEach(p=>{ const c=calcPlan(p); inv+=c.invested; val+=c.currentVal; });
-  return{inv,val,pnl:val-inv,pct:inv>0?((val-inv)/inv)*100:0};
+
+// ════════════════════════════════════════
+//  CALC — SAVINGS
+// ════════════════════════════════════════
+function calcSaving(s){
+  const capital=parseFloat(s.capital)||0;
+  const tae=parseFloat(s.tae)||0;
+  const freq=s.freq||'monthly'; // 'monthly' | 'annual'
+  const start=new Date(s.startDate);
+  const now=new Date();
+  const diffMs=now-start;
+  if(diffMs<=0) return{capital,interests:0,total:capital,periods:0};
+
+  let interests=0;
+  if(freq==='annual'){
+    const years=diffMs/(1000*60*60*24*365.25);
+    interests=capital*(tae/100)*years;
+  } else {
+    const months=diffMs/(1000*60*60*24*30.44);
+    const monthlyRate=tae/100/12;
+    interests=capital*monthlyRate*months;
+  }
+  return{capital,interests:parseFloat(interests.toFixed(2)),total:capital+interests};
 }
 
-// ══════════════════════════════════
+function totalSavings(){
+  return (S.savings||[]).reduce((s,sv)=>{ const c=calcSaving(sv); return {cap:s.cap+c.capital, int:s.int+c.interests, tot:s.tot+c.total}; },{cap:0,int:0,tot:0});
+}
+
+// ════════════════════════════════════════
+//  CALC — GLOBAL
+// ════════════════════════════════════════
+function calcGlobal(){
+  let inv=0,val=0;
+  S.plans.forEach(p=>{ const c=calcPlan(p); inv+=c.invested; val+=c.currentVal; });
+  const sv=totalSavings();
+  return{inv:inv+sv.cap, val:val+sv.tot, pnl:(val-inv)+sv.int, pct:inv>0?((val+sv.tot-inv-sv.cap)/(inv+sv.cap))*100:0, savInt:sv.int, savTot:sv.tot};
+}
+
+// ════════════════════════════════════════
 //  RENDER
-// ══════════════════════════════════
-let donutC=null,barC=null;
-function render(){ renderMetrics(); renderPlans(); renderCharts(); }
+// ════════════════════════════════════════
+let donutC=null, barC=null;
+function render(){ renderMetrics(); renderPlans(); renderSavings(); renderCharts(); }
 
 function renderMetrics(){
-  const t=calcTotal();
-  document.getElementById('mInv').textContent=fE(t.inv);
-  document.getElementById('mVal').textContent=fE(t.val);
-  const pe=document.getElementById('mPnl');
-  pe.textContent=fE(t.pnl); pe.className='mv '+(t.pnl>=0?'pos':'neg');
-  const pp=document.getElementById('mPct');
-  pp.textContent=fP(t.pct); pp.className='ms '+(t.pnl>=0?'pos':'neg');
-  document.getElementById('mCardPnl').className='metric '+(t.pnl>=0?'gline':'rline');
-  let pos=0; S.plans.forEach(p=>pos+=(p.positions||[]).length);
-  document.getElementById('mPos').textContent=pos;
-  document.getElementById('mPlan').textContent=S.plans.length+' planes';
+  const g=calcGlobal();
+  document.getElementById('gInv').textContent=fE(g.inv);
+  document.getElementById('gVal').textContent=fE(g.val);
+  const pe=document.getElementById('gPnl'); pe.textContent=fE(g.pnl); pe.className='mv '+(g.pnl>=0?'pos':'neg');
+  const pp=document.getElementById('gPct'); pp.textContent=fP(g.pct); pp.className='ms '+(g.pnl>=0?'pos':'neg');
+  document.getElementById('gCardPnl').className='metric '+(g.pnl>=0?'gline':'rline');
+  document.getElementById('gSav').textContent=fE(g.savTot);
+  document.getElementById('gSavInt').textContent='+'+fE(g.savInt)+' intereses';
 }
 
 function renderPlans(){
   const c=document.getElementById('plansContainer');
   if(!S.plans.length){
-    c.innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Sin planes. Crea tu primer plan de inversión arriba.</div>';
+    c.innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>Sin planes todavía. Crea el primero.</div>';
     return;
   }
   c.innerHTML=S.plans.map((p,i)=>{
     const st=calcPlan(p);
     const isPct=p.planType==='pct';
-    const chip=`<span class="type-chip ${isPct?'tc-pct':'tc-acc'}">${isPct?'% Porcentaje':'Por acciones'}</span>`;
-    const pnlC=st.pnl>=0?'var(--green)':'var(--red)';
+    const chip=`<span class="chip ${isPct?'chip-pct':'chip-acc'}">${isPct?'% XTB':'Acciones'}</span>`;
+    const pnlC=st.pnl>=0?'var(--gr)':'var(--rd)';
 
-    // pct sum warning
+    // pct sum indicator
     let pctWarn='';
     if(isPct){
       const sum=(p.positions||[]).reduce((s,pos)=>s+(parseFloat(pos.allocPct)||0),0);
-      const col=Math.abs(sum-100)<0.01?'var(--green)':sum>100?'var(--red)':'var(--accent)';
-      const msg=Math.abs(sum-100)<0.01?'✓ 100% asignado':sum>100?`⚠ ${sum.toFixed(1)}% — supera el 100%`:`${sum.toFixed(1)}% asignado (faltan ${(100-sum).toFixed(1)}%)`;
+      const col=Math.abs(sum-100)<.01?'var(--gr)':sum>100?'var(--rd)':'var(--or)';
+      const msg=Math.abs(sum-100)<.01?'✓ 100% asignado':sum>100?`⚠ ${sum.toFixed(1)}% — supera 100%`:`${sum.toFixed(1)}% asignado · faltan ${(100-sum).toFixed(1)}%`;
       pctWarn=`<div class="pct-sum" style="color:${col}">${msg}</div>`;
     }
 
     const rows=(p.positions||[]).map((pos,j)=>{
-      const sh=parseFloat(pos.shares)||0,bp=parseFloat(pos.buyPrice)||0,cp=parseFloat(pos.currentPrice)||0;
-      const inv=sh*bp,cur=sh*cp,pnl=cur-inv,pct2=inv>0?(pnl/inv)*100:0;
+      const sh=parseFloat(pos.shares)||0;
+      const bp=parseFloat(pos.buyPrice)||0;
+      const cp=parseFloat(pos.currentPrice)||0;
+      const di=isNaN(parseFloat(pos.dineroInv))?sh*bp:parseFloat(pos.dineroInv);
+      const cur=sh*cp;
+      const pnl=cur-di;
+      const pnlPct=di>0?(pnl/di)*100:0;
       const cls=pnl>=0?'cpos':'cneg';
       const allocPct=parseFloat(pos.allocPct)||0;
+
       const unitsCell=isPct
-        ?`<div style="font-size:12px">${allocPct.toFixed(1)}%</div>
-          <div class="alloc-bar-wrap"><div class="alloc-bar" style="width:${Math.min(allocPct,100)}%"></div></div>
-          <div style="font-size:10px;color:var(--text3)">${sh.toLocaleString('es-ES',{maximumFractionDigits:6})} uds.</div>`
-        :`<span style="font-size:13px">${sh.toLocaleString('es-ES',{maximumFractionDigits:6})}</span>`;
+        ?`<div style="font-size:11px">${allocPct.toFixed(1)}%</div>
+          <div class="alloc-bar-w"><div class="alloc-bar" style="width:${Math.min(allocPct,100)}%"></div></div>
+          <div style="font-size:10px;color:var(--tx3)">${sh.toLocaleString('es-ES',{maximumFractionDigits:6})} uds.</div>`
+        :`<span style="font-size:12px">${sh.toLocaleString('es-ES',{maximumFractionDigits:6})}</span>`;
+
       return `<tr>
         <td><span class="badge ${pos.type}">${tL(pos.type)}</span></td>
         <td class="name-cell">
@@ -425,18 +548,15 @@ function renderPlans(){
           <div class="ni">${esc(pos.isin||'')}${pos.ticker?' · '+esc(pos.ticker):''}</div>
         </td>
         <td>${unitsCell}</td>
-        <td style="font-size:13px">${fE(bp)}</td>
+        <td><div style="font-size:12px">${fE(di)}</div><div style="font-size:10px;color:var(--tx3)">P.medio: ${fE(bp)}</div></td>
         <td><input class="price-in" type="number" step="0.01" value="${cp.toFixed(2)}" onchange="manualPrice(${i},${j},this.value)"/></td>
-        <td class="${cls}">
-          <div class="pnl-v">${fE(pnl)}</div>
-          <div class="pnl-p">${fP(pct2)}</div>
-        </td>
+        <td class="${cls}"><div class="pnl-v">${fE(pnl)}</div><div class="pnl-p">${fP(pnlPct)}</div></td>
         <td>
-          <div style="display:flex;gap:4px">
-            <button class="btn ico blue" onclick="openModal('editPos',${i},${j})" title="Editar posición">
+          <div style="display:flex;gap:3px">
+            <button class="btn ico bl" onclick="openModal('editPos',${i},${j})" title="Editar">
               <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
-            <button class="btn ico red" onclick="removePos(${i},${j})" title="Eliminar posición">
+            <button class="btn ico rd" onclick="removePos(${i},${j})" title="Eliminar">
               <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
             </button>
           </div>
@@ -450,47 +570,93 @@ function renderPlans(){
 
     return `<div class="plan-card">
       <div class="plan-hdr" onclick="togglePlan(${i})">
-        <div>
-          <div class="pname">${esc(p.name)}${chip}</div>
-          <div class="pmeta-sub">${esc(p.platform)} · ${(p.positions||[]).length} posiciones</div>
+        <div class="plan-left">
+          <h3>${esc(p.name)} ${chip}</h3>
+          <div class="plan-sub">${esc(p.platform)} · ${(p.positions||[]).length} posiciones</div>
         </div>
-        <div class="plan-kpis">
-          <div class="kpi"><div class="kv">${fE(st.invested)}</div><div class="kl">Invertido</div></div>
-          <div class="kpi"><div class="kv">${fE(st.currentVal)}</div><div class="kl">Valor actual</div></div>
-          <div class="kpi"><div class="kv" style="color:${pnlC}">${fE(st.pnl)}</div><div class="kl">${fP(st.pnlPct)}</div></div>
+        <div class="plan-right">
+          <div class="plan-kpis">
+            <div class="kpi"><div class="kv">${fE(st.invested)}</div><div class="kl">Invertido</div></div>
+            <div class="kpi"><div class="kv">${fE(st.currentVal)}</div><div class="kl">Actual</div></div>
+            <div class="kpi"><div class="kv" style="color:${pnlC}">${fE(st.pnl)}</div><div class="kl">${fP(st.pnlPct)}</div></div>
+          </div>
           <div class="plan-acts" onclick="event.stopPropagation()">
             <button class="btn" onclick="openModal('addPos',${i})">
-              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Posición
+              <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Posición
             </button>
             <button class="btn" onclick="openModal('addAp',${i})">
-              <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>Aportación
+              <svg viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+              Aportación
             </button>
-            <button class="btn ico blue" onclick="openModal('editPlan',${i})" title="Editar plan">
+            <button class="btn ico bl" onclick="openModal('editPlan',${i})" title="Editar plan">
               <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
             </button>
-            <button class="btn ico red" onclick="deletePlan(${i})" title="Eliminar plan">
+            <button class="btn ico rd" onclick="deletePlan(${i})" title="Eliminar plan">
               <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
             </button>
           </div>
         </div>
       </div>
       <div class="plan-body" id="body${i}">
-        ${(p.positions||[]).length
-          ?`${pctWarn}<div style="overflow-x:auto">
+        ${(p.positions||[]).length?`
+          ${pctWarn}
+          <div class="tbl-wrap">
             <table class="pos-table">
               <thead><tr>
-                <th>Tipo</th><th>Activo / ISIN</th>
-                <th>${isPct?'Asignación':'Unidades'}</th>
-                <th>P.Medio compra</th><th>Precio actual</th><th>PyG</th><th></th>
+                <th>Tipo</th><th>Activo</th>
+                <th>${isPct?'Asign.':'Uds.'}</th>
+                <th>Dinero / P.Medio</th><th>Precio actual</th><th>PyG</th><th></th>
               </tr></thead>
               <tbody>${rows}</tbody>
-            </table></div>`
-          :'<div style="color:var(--text3);font-size:12px;padding:16px 0">Sin posiciones. Añade la primera.</div>'}
-        <div class="ap-section">
-          <div class="ap-label">Aportaciones · Total: ${fE(st.totalAp)}</div>
+            </table>
+          </div>`
+        :'<div style="color:var(--tx3);font-size:12px;padding:12px 0">Sin posiciones. Añade la primera.</div>'}
+        <div class="ap-wrap">
+          <div class="ap-lbl">Aportaciones · Total: ${fE(st.totalAp)}</div>
           <div class="ap-chips">
-            ${apChips||'<span style="color:var(--text3);font-size:12px">Sin aportaciones registradas.</span>'}
+            ${apChips||'<span style="color:var(--tx3);font-size:11px">Sin aportaciones registradas.</span>'}
           </div>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderSavings(){
+  const c=document.getElementById('savingsContainer');
+  if(!S.savings||!S.savings.length){
+    c.innerHTML='<div class="empty"><svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>Sin cuentas remuneradas.</div>';
+    return;
+  }
+  c.innerHTML=S.savings.map((sv,i)=>{
+    const calc=calcSaving(sv);
+    const freqLbl=sv.freq==='annual'?'Anual':'Mensual';
+    const daysSince=Math.floor((new Date()-new Date(sv.startDate))/(1000*60*60*24));
+    return `<div class="sav-card">
+      <div class="plan-hdr" style="cursor:default">
+        <div class="plan-left">
+          <h3>${esc(sv.bank)} <span class="chip chip-sav">Cuenta remunerada</span></h3>
+          <div class="plan-sub">TAE ${sv.tae}% · Abono ${freqLbl} · Desde ${sv.startDate||'—'}</div>
+        </div>
+        <div class="plan-acts">
+          <button class="btn ico bl" onclick="openModal('editSaving',${i})" title="Editar">
+            <svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn ico rd" onclick="deleteSaving(${i})" title="Eliminar">
+            <svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="sav-body">
+        <div class="sav-metrics">
+          <div class="sav-m"><div class="sl">Capital depositado</div><div class="sv">${fE(calc.capital)}</div></div>
+          <div class="sav-m"><div class="sl">Intereses acumulados</div><div class="sv pos">+${fE(calc.interests)}</div></div>
+          <div class="sav-m"><div class="sl">Valor total</div><div class="sv">${fE(calc.total)}</div></div>
+          <div class="sav-m"><div class="sl">Días transcurridos</div><div class="sv">${daysSince}</div></div>
+        </div>
+        <div style="font-size:10px;color:var(--tx3);margin-top:10px">
+          Intereses calculados de forma continua desde ${sv.startDate}. Actualiza la fecha o el capital si ha habido cambios.
         </div>
       </div>
     </div>`;
@@ -502,10 +668,9 @@ function renderCharts(){
   if(!S.plans.length){ row.style.display='none'; return; }
   row.style.display='grid';
   const isDk=document.documentElement.getAttribute('data-theme')==='dark';
-  const tC=isDk?'#5c5b58':'#a09d97';
-  const gC=isDk?'rgba(255,255,255,0.05)':'rgba(0,0,0,0.06)';
+  const tC=isDk?'#5c5b58':'#a09d97', gC=isDk?'rgba(255,255,255,.05)':'rgba(0,0,0,.06)';
   const mF="'DM Mono',monospace";
-  const pal=['#22c55e','#60a5fa','#c8a97e','#c4b5fd','#ef4444','#facc15','#34d399'];
+  const pal=['#22c55e','#60a5fa','#c8a97e','#c4b5fd','#ef4444','#facc15','#34d399','#f472b6'];
   const labels=S.plans.map(p=>p.name);
   const vals=S.plans.map(p=>{ const c=calcPlan(p); return +(c.currentVal||c.invested).toFixed(2); });
   const pcts=S.plans.map(p=>+calcPlan(p).pnlPct.toFixed(2));
@@ -514,7 +679,7 @@ function renderCharts(){
     type:'doughnut',
     data:{labels,datasets:[{data:vals,backgroundColor:pal.slice(0,labels.length),borderWidth:0}]},
     options:{responsive:true,maintainAspectRatio:false,cutout:'65%',
-      plugins:{legend:{position:'right',labels:{color:tC,font:{family:mF,size:11},boxWidth:10,padding:10}}}}
+      plugins:{legend:{position:'right',labels:{color:tC,font:{family:mF,size:11},boxWidth:10,padding:8}}}}
   });
   if(barC) barC.destroy();
   barC=new Chart(document.getElementById('barChart').getContext('2d'),{
@@ -522,53 +687,40 @@ function renderCharts(){
     data:{labels,datasets:[{data:pcts,backgroundColor:pcts.map(v=>v>=0?'rgba(34,197,94,.7)':'rgba(239,68,68,.7)'),borderRadius:4,borderSkipped:false}]},
     options:{responsive:true,maintainAspectRatio:false,
       plugins:{legend:{display:false}},
-      scales:{
-        x:{ticks:{color:tC,font:{family:mF,size:10}},grid:{color:gC}},
-        y:{ticks:{color:tC,font:{family:mF,size:10},callback:v=>v+'%'},grid:{color:gC}}
-      }}
+      scales:{x:{ticks:{color:tC,font:{family:mF,size:10}},grid:{color:gC}},y:{ticks:{color:tC,font:{family:mF,size:10},callback:v=>v+'%'},grid:{color:gC}}}}
   });
 }
 
-// ══════════════════════════════════
+// ════════════════════════════════════════
 //  PRICE REFRESH — ticker o ISIN
-// ══════════════════════════════════
+// ════════════════════════════════════════
 async function refreshPrices(){
-  // Recopilar posiciones únicas que tengan ticker o ISIN
-  // Clave: usamos ticker si existe, si no el ISIN
-  const posMap = {}; // key -> [{pi, ji}]
+  const posMap={};
   S.plans.forEach((plan,pi)=>{
     (plan.positions||[]).forEach((pos,ji)=>{
-      const key = (pos.ticker||'').trim() || (pos.isin||'').trim();
+      const key=(pos.ticker||'').trim()||(pos.isin||'').trim();
       if(!key) return;
-      if(!posMap[key]) posMap[key]={ ticker: (pos.ticker||'').trim(), isin: (pos.isin||'').trim(), refs:[] };
+      if(!posMap[key]) posMap[key]={ticker:(pos.ticker||'').trim(),isin:(pos.isin||'').trim(),refs:[]};
       posMap[key].refs.push({pi,ji});
     });
   });
   const keys=Object.keys(posMap);
-  if(!keys.length){ showToast('Sin posiciones con ticker o ISIN para actualizar','err'); return; }
+  if(!keys.length){ showToast('Sin posiciones con ticker o ISIN','err'); return; }
 
-  const icon=document.getElementById('refreshIcon');
-  const pill=document.getElementById('statusPill');
+  const icon=document.getElementById('refreshIco');
+  const pill=document.getElementById('pill');
   icon.classList.add('spinning');
-  pill.textContent='Buscando precios…'; pill.className='status-pill active';
+  pill.textContent='Buscando precios…'; pill.className='pill act';
   document.getElementById('refreshBtn').disabled=true;
 
-  let ok=0, fail=[];
+  let ok=0,fail=[];
   for(const key of keys){
-    const {ticker, isin, refs} = posMap[key];
+    const {ticker,isin,refs}=posMap[key];
     pill.textContent=`Actualizando ${ticker||isin}…`;
     try{
-      const price = await fetchPriceByTickerOrISIN(ticker, isin);
-      if(price!==null){
-        refs.forEach(({pi,ji})=>{ S.plans[pi].positions[ji].currentPrice=price; });
-        // Si se resolvió el ISIN a un ticker de Yahoo y la posición no tenía ticker, guardarlo
-        if(!ticker && posMap[key].resolvedTicker){
-          refs.forEach(({pi,ji})=>{ if(!S.plans[pi].positions[ji].ticker) S.plans[pi].positions[ji].ticker=posMap[key].resolvedTicker; });
-        }
-        ok++;
-      } else {
-        fail.push(ticker||isin);
-      }
+      const price=await fetchByTickerOrISIN(ticker,isin);
+      if(price!==null){ refs.forEach(({pi,ji})=>{ S.plans[pi].positions[ji].currentPrice=price; }); ok++; }
+      else fail.push(ticker||isin);
     }catch(e){ fail.push(ticker||isin); }
     await sleep(400);
   }
@@ -576,262 +728,241 @@ async function refreshPrices(){
   saveS(); render();
   icon.classList.remove('spinning');
   document.getElementById('refreshBtn').disabled=false;
-  document.getElementById('lastUpdate').textContent='Actualizado: '+new Date().toLocaleString('es-ES');
-  if(!fail.length){
-    pill.textContent='✓ '+ok+' actualizados'; pill.className='status-pill done';
-    showToast('✓ '+ok+' precios actualizados correctamente','ok');
-  } else {
-    pill.textContent=ok+' ok · '+fail.length+' sin datos'; pill.className='status-pill error';
-    showToast('⚠ Sin datos para: '+fail.join(', '),'err');
-  }
-  setTimeout(()=>{ pill.className='status-pill'; pill.textContent=''; },9000);
+  document.getElementById('lastUpd').textContent='Actualizado: '+new Date().toLocaleString('es-ES');
+  if(!fail.length){ pill.textContent='✓ '+ok+' actualizados'; pill.className='pill ok'; showToast('✓ '+ok+' precios actualizados','ok'); }
+  else{ pill.textContent=ok+' ok · '+fail.length+' sin datos'; pill.className='pill err'; showToast('⚠ Sin datos: '+fail.join(', '),'err'); }
+  setTimeout(()=>{ pill.className='pill'; pill.textContent=''; },9000);
 }
 
-// Intenta obtener precio: primero por ticker, luego por ISIN via búsqueda Yahoo
-async function fetchPriceByTickerOrISIN(ticker, isin){
-  // 1. Si hay ticker, intentar directamente
-  if(ticker){
-    const p = await fetchYahooPrice(ticker);
-    if(p!==null) return p;
-  }
-  // 2. Si hay ISIN, buscar el símbolo Yahoo correspondiente y luego pedir precio
-  if(isin){
-    const symbol = await resolveISINtoSymbol(isin);
-    if(symbol){
-      const p = await fetchYahooPrice(symbol);
-      if(p!==null) return p;
-    }
-  }
+async function fetchByTickerOrISIN(ticker,isin){
+  if(ticker){ const p=await fetchYahoo(ticker); if(p!==null) return p; }
+  if(isin){ const sym=await isinToSymbol(isin); if(sym){ const p=await fetchYahoo(sym); if(p!==null) return p; } }
   return null;
 }
-
-// Llama a Yahoo Finance chart API para obtener el precio
-async function fetchYahooPrice(symbol){
+async function fetchYahoo(sym){
   try{
-    const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(symbol)}?interval=1d&range=1d`;
-    const proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const res=await fetch(proxy,{signal:AbortSignal.timeout(10000)});
+    const url=`https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(sym)}?interval=1d&range=1d`;
+    const res=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(10000)});
     if(!res.ok) return null;
-    const json=await res.json();
-    const data=JSON.parse(json.contents);
-    const price=data?.chart?.result?.[0]?.meta?.regularMarketPrice;
-    return price!=null?parseFloat(price.toFixed(4)):null;
+    const j=await res.json(); const d=JSON.parse(j.contents);
+    const p=d?.chart?.result?.[0]?.meta?.regularMarketPrice;
+    return p!=null?parseFloat(p.toFixed(4)):null;
   }catch(e){ return null; }
 }
-
-// Busca en Yahoo Finance el símbolo a partir de un ISIN usando el endpoint de búsqueda
-async function resolveISINtoSymbol(isin){
+async function isinToSymbol(isin){
   try{
-    const url=`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(isin)}&quotesCount=5&newsCount=0&enableFuzzyQuery=false`;
-    const proxy=`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const res=await fetch(proxy,{signal:AbortSignal.timeout(10000)});
+    const url=`https://query1.finance.yahoo.com/v1/finance/search?q=${encodeURIComponent(isin)}&quotesCount=5&newsCount=0`;
+    const res=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`,{signal:AbortSignal.timeout(10000)});
     if(!res.ok) return null;
-    const json=await res.json();
-    const data=JSON.parse(json.contents);
-    const quotes=data?.finance?.result?.[0]?.quotes||[];
-    // Preferir el resultado con tipo EQUITY o ETF, que no sea en moneda extraña
-    // Orden de preferencia: .DE, .L, sin sufijo (US), luego cualquier otro
-    const preferred=['','.DE','.L','.PA','.MI','.MC','.AS','.BR','.SW','.VI'];
+    const j=await res.json(); const d=JSON.parse(j.contents);
+    const quotes=d?.finance?.result?.[0]?.quotes||[];
+    const pref=['','.DE','.L','.PA','.MI','.MC','.AS','.SW','.BR'];
     let best=null;
-    for(const suffix of preferred){
-      best=quotes.find(q=>q.symbol&&q.symbol.endsWith(suffix)&&(q.quoteType==='EQUITY'||q.quoteType==='ETF'||q.quoteType==='MUTUALFUND'));
-      if(best) break;
-    }
-    if(!best) best=quotes[0]; // fallback: primer resultado
-    return best?.symbol||null;
+    for(const s of pref){ best=quotes.find(q=>q.symbol&&q.symbol.endsWith(s)&&['EQUITY','ETF','MUTUALFUND'].includes(q.quoteType)); if(best) break; }
+    return (best||quotes[0])?.symbol||null;
   }catch(e){ return null; }
 }
 
-// ══════════════════════════════════
-//  ACTIONS
-// ══════════════════════════════════
+// ════════════════════════════════════════
+//  PLAN ACTIONS
+// ════════════════════════════════════════
 function togglePlan(i){ const b=document.getElementById('body'+i); b.style.display=b.style.display==='block'?'none':'block'; }
-function deletePlan(i){ if(!confirm('¿Eliminar el plan "'+S.plans[i].name+'" y todas sus posiciones?')) return; S.plans.splice(i,1); saveS(); render(); }
+function deletePlan(i){ if(!confirm('¿Eliminar el plan "'+S.plans[i].name+'"?')) return; S.plans.splice(i,1); saveS(); render(); }
 function removePos(pi,ji){ S.plans[pi].positions.splice(ji,1); saveS(); render(); document.getElementById('body'+pi).style.display='block'; }
 function manualPrice(pi,ji,val){ S.plans[pi].positions[ji].currentPrice=parseFloat(val)||0; saveS(); renderMetrics(); renderCharts(); document.getElementById('body'+pi).style.display='block'; }
 function removeAp(pi,ki){ S.plans[pi].aportaciones.splice(ki,1); saveS(); render(); document.getElementById('body'+pi).style.display='block'; }
+function deleteSaving(i){ if(!confirm('¿Eliminar esta cuenta?')) return; S.savings.splice(i,1); saveS(); render(); }
 
-// ══════════════════════════════════
+// ════════════════════════════════════════
 //  MODAL
-// ══════════════════════════════════
+// ════════════════════════════════════════
 function openModal(type,a,b){
-  document.getElementById('modalOverlay').classList.add('open');
+  document.getElementById('modalOv').classList.add('open');
   const p=a!=null?S.plans[a]:null;
   const isPct=p&&p.planType==='pct';
 
   if(type==='addPlan'){
-    document.getElementById('modalTitle').textContent='Nuevo plan de inversión';
-    document.getElementById('modalContent').innerHTML=`
+    document.getElementById('mTitle').textContent='Nuevo plan de inversión';
+    document.getElementById('mContent').innerHTML=`
       <div class="fg"><label>Nombre del plan</label><input id="f_name" placeholder="Ej: Plan ETFs XTB"/></div>
       <div class="fg"><label>Plataforma / broker</label><input id="f_plat" placeholder="Ej: XTB, Degiro, Binance…"/></div>
       <div class="fg">
         <label>Tipo de plan</label>
         <select id="f_ptype">
-          <option value="pct">Por porcentaje — estilo XTB (distribuyes % entre activos)</option>
-          <option value="acc">Por acciones / unidades (introduces cuántas tienes)</option>
+          <option value="pct">Por porcentaje — estilo XTB</option>
+          <option value="acc">Por acciones / unidades</option>
         </select>
-        <div class="hint">El modo <strong>porcentaje</strong> calcula el valor según lo aportado y el % por activo. El modo <strong>acciones</strong> usa unidades y precio directo.</div>
+        <div class="hint">Porcentaje: tú introduces el importe y la app distribuye según el % asignado a cada activo. Acciones: introduces cuántas unidades tienes.</div>
       </div>
-      <div class="mactions">
-        <button class="btn" onclick="closeModal()">Cancelar</button>
-        <button class="btn primary" onclick="addPlan()">Crear plan</button>
-      </div>`;
+      <div class="macts"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn prim" onclick="addPlan()">Crear plan</button></div>`;
 
   } else if(type==='editPlan'){
-    document.getElementById('modalTitle').textContent='Editar plan';
-    document.getElementById('modalContent').innerHTML=`
-      <div class="fg"><label>Nombre del plan</label><input id="f_name" value="${esc(p.name)}"/></div>
-      <div class="fg"><label>Plataforma / broker</label><input id="f_plat" value="${esc(p.platform)}"/></div>
+    document.getElementById('mTitle').textContent='Editar plan';
+    document.getElementById('mContent').innerHTML=`
+      <div class="fg"><label>Nombre</label><input id="f_name" value="${esc(p.name)}"/></div>
+      <div class="fg"><label>Plataforma</label><input id="f_plat" value="${esc(p.platform)}"/></div>
       <div class="fg"><label>Tipo de plan</label>
         <select id="f_ptype">
           <option value="pct" ${p.planType==='pct'?'selected':''}>Por porcentaje — estilo XTB</option>
           <option value="acc" ${p.planType!=='pct'?'selected':''}>Por acciones / unidades</option>
         </select>
       </div>
-      <div class="mactions">
-        <button class="btn" onclick="closeModal()">Cancelar</button>
-        <button class="btn primary" onclick="savePlanEdit(${a})">Guardar cambios</button>
-      </div>`;
+      <div class="macts"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn prim" onclick="savePlanEdit(${a})">Guardar</button></div>`;
 
   } else if(type==='addPos'){
-    document.getElementById('modalTitle').textContent='Añadir posición';
-    document.getElementById('modalContent').innerHTML=`
+    document.getElementById('mTitle').textContent='Añadir posición';
+    document.getElementById('mContent').innerHTML=`
       <div class="frow">
-        <div class="fg"><label>Tipo de activo</label>
+        <div class="fg"><label>Tipo</label>
           <select id="f_type"><option value="etf">ETF</option><option value="accion">Acción</option><option value="crypto">Cripto</option><option value="fondo">Fondo</option><option value="otro">Otro</option></select>
         </div>
-        <div class="fg"><label>Nombre del activo</label><input id="f_posname" placeholder="Ej: Vanguard All-World"/></div>
+        <div class="fg"><label>Nombre</label><input id="f_posname" placeholder="Vanguard All-World"/></div>
       </div>
       <div class="frow">
-        <div class="fg">
-          <label>ISIN</label>
-          <input id="f_isin" placeholder="Ej: IE00B3RBWM25" style="text-transform:uppercase"/>
-          <div class="hint">Código ISIN (lo ves en XTB en el detalle del activo)</div>
-        </div>
-        <div class="fg">
-          <label>Ticker Yahoo Finance</label>
-          <input id="f_ticker" placeholder="Ej: VWCE.DE"/>
-          <div class="hint">Para actualización automática de precios</div>
-        </div>
+        <div class="fg"><label>ISIN</label><input id="f_isin" placeholder="IE00B3RBWM25" style="text-transform:uppercase"/><div class="hint">Código ISIN del activo (XTB te lo muestra)</div></div>
+        <div class="fg"><label>Ticker Yahoo (opcional)</label><input id="f_ticker" placeholder="VWCE.DE"/><div class="hint">Si no lo pones, se busca por ISIN</div></div>
       </div>
       ${isPct?`
       <div class="frow">
-        <div class="fg">
-          <label>% asignado en el plan</label>
-          <input id="f_pct" type="number" min="0" max="100" step="0.1" placeholder="25"/>
-          <div class="hint">% de cada aportación destinado a este activo</div>
-        </div>
-        <div class="fg">
-          <label>Participaciones actuales</label>
-          <input id="f_shares" type="number" min="0" step="any" placeholder="0"/>
-          <div class="hint">Se recalcula al añadir aportaciones</div>
-        </div>
+        <div class="fg"><label>% asignado en el plan</label><input id="f_pct" type="number" min="0" max="100" step="0.1" placeholder="25"/><div class="hint">% de cada aportación destinado a este activo</div></div>
+        <div class="fg"><label>Dinero invertido actual (€)</label><input id="f_dinv" type="number" min="0" step="any" placeholder="0.00"/><div class="hint">Total que has invertido ya en este activo</div></div>
       </div>
       <div class="frow">
-        <div class="fg">
-          <label>Precio medio de compra (€)</label>
-          <input id="f_buy" type="number" min="0" step="any" placeholder="0.00"/>
-          <div class="hint">Se recalcula automáticamente con las aportaciones</div>
-        </div>
-        <div class="fg">
-          <label>Precio actual (€)</label>
-          <input id="f_curr" type="number" min="0" step="any" placeholder="0.00"/>
-        </div>
+        <div class="fg"><label>Participaciones actuales</label><input id="f_shares" type="number" min="0" step="any" placeholder="0"/></div>
+        <div class="fg"><label>Precio medio de compra (€)</label><input id="f_buy" type="number" min="0" step="any" placeholder="0.00"/><div class="hint">Se recalcula automáticamente al añadir aportaciones</div></div>
       </div>`:`
       <div class="frow">
         <div class="fg"><label>Nº de acciones / unidades</label><input id="f_shares" type="number" min="0" step="any" placeholder="10"/></div>
-        <div class="fg"><label>Precio medio de compra (€)</label><input id="f_buy" type="number" min="0" step="any" placeholder="98.50"/></div>
+        <div class="fg"><label>Precio medio compra (€)</label><input id="f_buy" type="number" min="0" step="any" placeholder="98.50"/></div>
       </div>
-      <div class="fg"><label>Precio actual (€) — Yahoo lo actualizará</label><input id="f_curr" type="number" min="0" step="any" placeholder="105.20"/></div>`}
-      <div class="mactions">
-        <button class="btn" onclick="closeModal()">Cancelar</button>
-        <button class="btn primary" onclick="addPos(${a})">Añadir posición</button>
-      </div>`;
+      <div class="fg"><label>Dinero invertido (€) — opcional, sobreescribe uds×precio</label><input id="f_dinv" type="number" min="0" step="any" placeholder=""/></div>`}
+      <div class="fg"><label>Precio actual (€) — Yahoo lo actualizará</label><input id="f_curr" type="number" min="0" step="any" placeholder="0.00"/></div>
+      <div class="macts"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn prim" onclick="addPos(${a})">Añadir</button></div>`;
 
   } else if(type==='editPos'){
     const pos=p.positions[b];
-    document.getElementById('modalTitle').textContent='Editar — '+(pos.name||pos.isin||pos.ticker);
-    document.getElementById('modalContent').innerHTML=`
+    document.getElementById('mTitle').textContent='Editar — '+(pos.name||pos.isin||pos.ticker||'posición');
+    document.getElementById('mContent').innerHTML=`
       <div class="frow">
-        <div class="fg"><label>Tipo de activo</label>
-          <select id="f_type">
-            ${['etf','accion','crypto','fondo','otro'].map(v=>`<option value="${v}" ${pos.type===v?'selected':''}>${tL(v)}</option>`).join('')}
-          </select>
-        </div>
-        <div class="fg"><label>Nombre del activo</label><input id="f_posname" value="${esc(pos.name||'')}"/></div>
+        <div class="fg"><label>Tipo</label><select id="f_type">${['etf','accion','crypto','fondo','otro'].map(v=>`<option value="${v}" ${pos.type===v?'selected':''}>${tL(v)}</option>`).join('')}</select></div>
+        <div class="fg"><label>Nombre</label><input id="f_posname" value="${esc(pos.name||'')}"/></div>
       </div>
       <div class="frow">
         <div class="fg"><label>ISIN</label><input id="f_isin" value="${esc(pos.isin||'')}" style="text-transform:uppercase"/></div>
-        <div class="fg"><label>Ticker Yahoo Finance</label><input id="f_ticker" value="${esc(pos.ticker||'')}"/></div>
+        <div class="fg"><label>Ticker Yahoo</label><input id="f_ticker" value="${esc(pos.ticker||'')}"/></div>
       </div>
-      ${isPct?`
+      ${isPct?`<div class="fg"><label>% asignado</label><input id="f_pct" type="number" min="0" max="100" step="0.1" value="${(parseFloat(pos.allocPct)||0).toFixed(1)}"/></div>`:''}
       <div class="frow">
-        <div class="fg"><label>% asignado</label><input id="f_pct" type="number" min="0" max="100" step="0.1" value="${(parseFloat(pos.allocPct)||0).toFixed(1)}"/></div>
-        <div class="fg"><label>Participaciones</label><input id="f_shares" type="number" min="0" step="any" value="${parseFloat(pos.shares||0)}"/></div>
-      </div>`:`
-      <div class="fg"><label>Nº de acciones / unidades</label><input id="f_shares" type="number" min="0" step="any" value="${parseFloat(pos.shares||0)}"/></div>`}
+        <div class="fg"><label>Participaciones / unidades</label><input id="f_shares" type="number" min="0" step="any" value="${parseFloat(pos.shares||0)}"/></div>
+        <div class="fg"><label>Precio medio compra (€)</label><input id="f_buy" type="number" min="0" step="any" value="${(parseFloat(pos.buyPrice||0)).toFixed(4)}"/></div>
+      </div>
       <div class="frow">
-        <div class="fg"><label>Precio medio de compra (€)</label><input id="f_buy" type="number" min="0" step="any" value="${(parseFloat(pos.buyPrice||0)).toFixed(4)}"/></div>
+        <div class="fg"><label>Dinero invertido total (€)</label><input id="f_dinv" type="number" min="0" step="any" value="${isNaN(parseFloat(pos.dineroInv))?'':parseFloat(pos.dineroInv).toFixed(2)}"/><div class="hint">Deja vacío para usar uds × precio</div></div>
         <div class="fg"><label>Precio actual (€)</label><input id="f_curr" type="number" min="0" step="any" value="${(parseFloat(pos.currentPrice||0)).toFixed(4)}"/></div>
       </div>
-      <div class="mactions">
-        <button class="btn" onclick="closeModal()">Cancelar</button>
-        <button class="btn primary" onclick="saveEditPos(${a},${b})">Guardar cambios</button>
-      </div>`;
+      <div class="macts"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn prim" onclick="saveEditPos(${a},${b})">Guardar</button></div>`;
 
   } else if(type==='addAp'){
-    document.getElementById('modalTitle').textContent='Registrar aportación';
-    const posBlocks=isPct?(p.positions||[]).map((pos,j)=>`
-      <div class="ap-pos-block">
-        <div class="ap-pos-label">${esc(pos.name||pos.isin||pos.ticker)}</div>
-        <div class="ap-pos-meta">${(parseFloat(pos.allocPct)||0).toFixed(1)}% · ${(parseFloat(pos.shares)||0).toLocaleString('es-ES',{maximumFractionDigits:6})} participaciones actuales · P.medio actual: ${fE(pos.buyPrice)}</div>
-        <div class="frow">
-          <div class="fg"><label>Nuevas participaciones recibidas</label><input id="f_ns_${j}" type="number" min="0" step="any" placeholder="0"/></div>
-          <div class="fg"><label>Precio en esta compra (€)</label><input id="f_np_${j}" type="number" min="0" step="any" placeholder="${(parseFloat(pos.currentPrice)||0).toFixed(2)}"/></div>
-        </div>
-      </div>`).join(''):'';
-    document.getElementById('modalContent').innerHTML=`
+    document.getElementById('mTitle').textContent='Registrar aportación';
+    // Para planes PCT: mostrar cuánto va a cada activo automáticamente
+    const apBlocks=isPct&&(p.positions||[]).length?`
+      <hr class="divider"/>
+      <div style="font-size:11px;color:var(--tx3);margin-bottom:10px">La app calculará automáticamente las participaciones usando el precio actual de cada activo. Puedes corregirlas si XTB te dio un precio diferente.</div>
+      ${(p.positions||[]).map((pos,j)=>{
+        const pct2=parseFloat(pos.allocPct)||0;
+        const cp=parseFloat(pos.currentPrice)||0;
+        return `<div class="ap-pos-block">
+          <div class="ap-pos-name">${esc(pos.name||pos.isin||pos.ticker)}</div>
+          <div class="ap-pos-meta">${pct2.toFixed(1)}% · precio actual: ${fE(cp)} · participaciones actuales: ${(parseFloat(pos.shares)||0).toFixed(6)}</div>
+          <div class="frow">
+            <div class="fg"><label>Precio compra en esta aportación (€)</label><input id="f_np_${j}" type="number" min="0" step="any" placeholder="${cp>0?cp.toFixed(2):'—'}"/><div class="hint">Déjalo vacío para usar el precio actual</div></div>
+            <div class="fg"><label>Participaciones recibidas (auto-calculadas)</label><input id="f_ns_${j}" type="number" min="0" step="any" placeholder="auto"/><div class="hint">Déjalo vacío y la app lo calcula</div></div>
+          </div>
+        </div>`;
+      }).join('')}`:'';
+    document.getElementById('mContent').innerHTML=`
       <div class="frow">
-        <div class="fg"><label>Importe aportado (€)</label><input id="f_amount" type="number" min="0" step="any" placeholder="500"/></div>
+        <div class="fg"><label>Importe aportado (€)</label><input id="f_amount" type="number" min="0" step="any" placeholder="500" oninput="previewAp(${a})"/></div>
         <div class="fg"><label>Fecha</label><input id="f_fecha" type="date" value="${new Date().toISOString().split('T')[0]}"/></div>
       </div>
-      ${isPct&&(p.positions||[]).length?`
-        <div style="font-size:11px;color:var(--text3);margin-bottom:12px;border-top:1px solid var(--border);padding-top:14px">
-          Introduce las participaciones y precio de compra que has recibido en XTB para esta aportación. El precio medio se recalculará automáticamente.
+      <div id="apPreview"></div>
+      ${apBlocks}
+      <div class="macts"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn prim" onclick="addAp(${a})">Guardar aportación</button></div>`;
+
+  } else if(type==='addSaving'){
+    document.getElementById('mTitle').textContent='Añadir cuenta remunerada';
+    document.getElementById('mContent').innerHTML=`
+      <div class="fg"><label>Banco / entidad</label><input id="f_bank" placeholder="Ej: ING Direct, Revolut, Myinvestor…"/></div>
+      <div class="fg"><label>Nombre de la cuenta (opcional)</label><input id="f_accname" placeholder="Ej: Cuenta Naranja"/></div>
+      <div class="frow">
+        <div class="fg"><label>Capital depositado (€)</label><input id="f_cap" type="number" min="0" step="any" placeholder="10000"/></div>
+        <div class="fg"><label>TAE (%)</label><input id="f_tae" type="number" min="0" step="0.01" placeholder="3.50"/></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Frecuencia de abono</label>
+          <select id="f_freq"><option value="monthly">Mensual</option><option value="annual">Anual</option></select>
         </div>
-        ${posBlocks}`:''}
-      <div class="mactions">
-        <button class="btn" onclick="closeModal()">Cancelar</button>
-        <button class="btn primary" onclick="addAp(${a})">Guardar aportación</button>
-      </div>`;
+        <div class="fg"><label>Fecha de inicio</label><input id="f_start" type="date" value="${new Date().toISOString().split('T')[0]}"/></div>
+      </div>
+      <div class="macts"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn prim" onclick="addSaving()">Añadir cuenta</button></div>`;
+
+  } else if(type==='editSaving'){
+    const sv=S.savings[a];
+    document.getElementById('mTitle').textContent='Editar cuenta — '+esc(sv.bank);
+    document.getElementById('mContent').innerHTML=`
+      <div class="fg"><label>Banco / entidad</label><input id="f_bank" value="${esc(sv.bank)}"/></div>
+      <div class="fg"><label>Nombre (opcional)</label><input id="f_accname" value="${esc(sv.accname||'')}"/></div>
+      <div class="frow">
+        <div class="fg"><label>Capital depositado (€)</label><input id="f_cap" type="number" min="0" step="any" value="${sv.capital}"/></div>
+        <div class="fg"><label>TAE (%)</label><input id="f_tae" type="number" min="0" step="0.01" value="${sv.tae}"/></div>
+      </div>
+      <div class="frow">
+        <div class="fg"><label>Frecuencia de abono</label>
+          <select id="f_freq"><option value="monthly" ${sv.freq==='monthly'?'selected':''}>Mensual</option><option value="annual" ${sv.freq==='annual'?'selected':''}>Anual</option></select>
+        </div>
+        <div class="fg"><label>Fecha de inicio</label><input id="f_start" type="date" value="${sv.startDate||''}"/></div>
+      </div>
+      <div class="macts"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn prim" onclick="saveEditSaving(${a})">Guardar</button></div>`;
 
   } else if(type==='importText'){
-    document.getElementById('modalTitle').textContent='Importar datos';
-    document.getElementById('modalContent').innerHTML=`
-      <div class="fg"><label>Pega aquí el JSON exportado</label><textarea id="f_json" rows="8" placeholder='{"plans":[]}'></textarea></div>
-      <div class="warn-box">⚠ Esto reemplazará TODOS los datos actuales.</div>
-      <div class="mactions">
-        <button class="btn" onclick="closeModal()">Cancelar</button>
-        <button class="btn red" onclick="importFromText()">Importar y reemplazar</button>
-      </div>`;
+    document.getElementById('mTitle').textContent='Importar datos';
+    document.getElementById('mContent').innerHTML=`
+      <div class="fg"><label>Pega aquí el JSON exportado</label><textarea id="f_json" rows="7" placeholder='{"plans":[],"savings":[]}'></textarea></div>
+      <div class="warn">⚠ Esto reemplazará TODOS los datos actuales.</div>
+      <div class="macts"><button class="btn" onclick="closeModal()">Cancelar</button><button class="btn rd" onclick="importFromText()">Importar y reemplazar</button></div>`;
   }
 }
 
-function closeModal(){ document.getElementById('modalOverlay').classList.remove('open'); }
-function overlayClick(e){ if(e.target===document.getElementById('modalOverlay')) closeModal(); }
+function closeModal(){ document.getElementById('modalOv').classList.remove('open'); }
+function ovClick(e){ if(e.target===document.getElementById('modalOv')) closeModal(); }
 
-// ══════════════════════════════════
+// Preview de distribución al escribir el importe
+function previewAp(pi){
+  const p=S.plans[pi];
+  if(!p||p.planType!=='pct') return;
+  const amount=parseFloat(gv('f_amount'))||0;
+  if(!amount){ document.getElementById('apPreview').innerHTML=''; return; }
+  const lines=(p.positions||[]).map(pos=>{
+    const pct=parseFloat(pos.allocPct)||0;
+    const dinero=amount*pct/100;
+    const cp=parseFloat(pos.currentPrice)||0;
+    const partsAuto=cp>0?(dinero/cp).toFixed(6):'—';
+    return `<div>${esc(pos.name||pos.isin||pos.ticker)}: <strong style="color:var(--ac)">${fE(dinero)}</strong> → ~${partsAuto} participaciones</div>`;
+  }).join('');
+  document.getElementById('apPreview').innerHTML=`<div class="calc-preview" style="margin-top:6px;margin-bottom:4px">${lines}</div>`;
+}
+
+// ════════════════════════════════════════
 //  CRUD
-// ══════════════════════════════════
+// ════════════════════════════════════════
 function addPlan(){
   const name=gv('f_name').trim();
   if(!name){ showToast('Introduce un nombre','err'); return; }
   S.plans.push({name,platform:gv('f_plat').trim()||'Sin plataforma',planType:gv('f_ptype')||'acc',positions:[],aportaciones:[]});
-  saveS(); render(); closeModal(); showToast('✓ Plan "'+name+'" creado','ok');
+  saveS(); render(); closeModal(); showToast('✓ Plan creado','ok');
 }
 function savePlanEdit(i){
-  const name=gv('f_name').trim();
-  if(!name){ showToast('Introduce un nombre','err'); return; }
+  const name=gv('f_name').trim(); if(!name){ showToast('Introduce un nombre','err'); return; }
   S.plans[i].name=name; S.plans[i].platform=gv('f_plat').trim()||'Sin plataforma'; S.plans[i].planType=gv('f_ptype')||'acc';
   saveS(); render(); closeModal(); showToast('✓ Plan actualizado','ok');
 }
@@ -839,15 +970,19 @@ function savePlanEdit(i){
 function addPos(i){
   const p=S.plans[i], isPct=p.planType==='pct';
   const name=gv('f_posname').trim(), isin=gv('f_isin').trim().toUpperCase(), ticker=gv('f_ticker').trim().toUpperCase();
-  const shares=parseFloat(gv('f_shares'))||0, buy=parseFloat(gv('f_buy'))||0, curr=parseFloat(gv('f_curr'))||buy;
+  const shares=parseFloat(gv('f_shares'))||0;
+  const buy=parseFloat(gv('f_buy'))||0;
+  const curr=parseFloat(gv('f_curr'))||buy;
   const pct=parseFloat(gv('f_pct'))||0;
-  if(!name&&!isin){ showToast('Introduce al menos nombre o ISIN','err'); return; }
+  const dinvRaw=gv('f_dinv'); const dinv=dinvRaw.trim()===''?NaN:parseFloat(dinvRaw);
+  if(!name&&!isin){ showToast('Introduce nombre o ISIN','err'); return; }
   const pos={type:gv('f_type')||'etf',name,isin,ticker,shares,buyPrice:buy,currentPrice:curr};
   if(isPct) pos.allocPct=pct;
+  if(!isNaN(dinv)) pos.dineroInv=dinv;
   p.positions.push(pos);
   saveS(); render(); closeModal();
   document.getElementById('body'+i).style.display='block';
-  showToast('✓ Posición "'+( name||isin)+'" añadida','ok');
+  showToast('✓ Posición añadida','ok');
 }
 
 function saveEditPos(pi,ji){
@@ -860,6 +995,8 @@ function saveEditPos(pi,ji){
   pos.buyPrice=parseFloat(gv('f_buy'))||0;
   pos.currentPrice=parseFloat(gv('f_curr'))||0;
   if(isPct) pos.allocPct=parseFloat(gv('f_pct'))||0;
+  const dinvRaw=gv('f_dinv'); const dinv=dinvRaw.trim()===''?NaN:parseFloat(dinvRaw);
+  if(!isNaN(dinv)) pos.dineroInv=dinv; else delete pos.dineroInv;
   saveS(); render(); closeModal();
   document.getElementById('body'+pi).style.display='block';
   showToast('✓ Posición actualizada','ok');
@@ -872,17 +1009,27 @@ function addAp(i){
   const p=S.plans[i];
   if(!p.aportaciones) p.aportaciones=[];
   p.aportaciones.push({amount,fecha});
-  // Si es plan por porcentaje: recalcular precio medio ponderado
+
   if(p.planType==='pct'){
+    // Distribuir la aportación entre las posiciones según su %
     (p.positions||[]).forEach((pos,j)=>{
-      const ns=parseFloat(document.getElementById('f_ns_'+j)?.value)||0;
+      const pct=parseFloat(pos.allocPct)||0;
+      if(pct<=0) return;
+      const dineroPos=amount*pct/100; // dinero destinado a esta posición
+      // Precio de compra: usar el introducido manualmente o el precio actual
       const np=parseFloat(document.getElementById('f_np_'+j)?.value)||parseFloat(pos.currentPrice)||0;
-      if(ns>0){
+      // Participaciones: usar las introducidas manualmente o calcular automáticamente
+      const nsInput=document.getElementById('f_ns_'+j)?.value;
+      const ns=nsInput&&nsInput.trim()!==''?parseFloat(nsInput):(np>0?dineroPos/np:0);
+      if(ns>0&&np>0){
         const oldSh=parseFloat(pos.shares)||0, oldBp=parseFloat(pos.buyPrice)||0;
         const total=oldSh+ns;
-        pos.shares=total;
+        pos.shares=parseFloat(total.toFixed(8));
         pos.buyPrice=total>0?parseFloat(((oldSh*oldBp+ns*np)/total).toFixed(6)):np;
       }
+      // Actualizar dineroInv sumando la parte proporcional
+      const existingDinv=isNaN(parseFloat(pos.dineroInv))?0:parseFloat(pos.dineroInv);
+      pos.dineroInv=parseFloat((existingDinv+dineroPos).toFixed(2));
     });
   }
   saveS(); render(); closeModal();
@@ -890,39 +1037,56 @@ function addAp(i){
   showToast('✓ Aportación de '+fE(amount)+' registrada','ok');
 }
 
-// ══════════════════════════════════
-//  IMPORT / EXPORT
-// ══════════════════════════════════
-function exportJSON(){
-  const d=JSON.stringify({exportDate:new Date().toISOString(),version:4,...S},null,2);
-  const url=URL.createObjectURL(new Blob([d],{type:'application/json'}));
-  const a=document.createElement('a');
-  a.href=url; a.download='micartera-'+new Date().toISOString().split('T')[0]+'.json'; a.click();
-  URL.revokeObjectURL(url); showToast('✓ Archivo descargado','ok');
+function addSaving(){
+  const bank=gv('f_bank').trim();
+  if(!bank){ showToast('Introduce el nombre del banco','err'); return; }
+  const capital=parseFloat(gv('f_cap'));
+  const tae=parseFloat(gv('f_tae'));
+  if(isNaN(capital)||capital<=0){ showToast('Introduce el capital','err'); return; }
+  if(isNaN(tae)||tae<=0){ showToast('Introduce el TAE','err'); return; }
+  S.savings.push({bank,accname:gv('f_accname').trim(),capital,tae,freq:gv('f_freq')||'monthly',startDate:gv('f_start')});
+  saveS(); render(); closeModal();
+  showToast('✓ Cuenta remunerada añadida','ok');
 }
-async function exportClipboard(){
-  const d=JSON.stringify({exportDate:new Date().toISOString(),version:4,...S},null,2);
+function saveEditSaving(i){
+  const bank=gv('f_bank').trim(); if(!bank){ showToast('Introduce el banco','err'); return; }
+  S.savings[i]={...S.savings[i],bank,accname:gv('f_accname').trim(),capital:parseFloat(gv('f_cap'))||0,tae:parseFloat(gv('f_tae'))||0,freq:gv('f_freq')||'monthly',startDate:gv('f_start')};
+  saveS(); render(); closeModal(); showToast('✓ Cuenta actualizada','ok');
+}
+
+// ════════════════════════════════════════
+//  IMPORT / EXPORT
+// ════════════════════════════════════════
+function exportJSON(){
+  const d=JSON.stringify({exportDate:new Date().toISOString(),version:5,...S},null,2);
+  const url=URL.createObjectURL(new Blob([d],{type:'application/json'}));
+  const a=document.createElement('a'); a.href=url; a.download='micartera-'+new Date().toISOString().split('T')[0]+'.json'; a.click();
+  URL.revokeObjectURL(url); showToast('✓ Descargado','ok');
+}
+async function exportClip(){
+  const d=JSON.stringify({exportDate:new Date().toISOString(),version:5,...S},null,2);
   try{ await navigator.clipboard.writeText(d); }
   catch(e){ const t=document.createElement('textarea');t.value=d;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t); }
-  showToast('✓ Copiado al portapapeles','ok');
+  showToast('✓ Copiado','ok');
 }
 function importData(text){
   try{
     const p=JSON.parse(text);
     if(!p.plans||!Array.isArray(p.plans)) throw new Error();
-    if(!confirm('¿Seguro? Esto reemplazará todos los datos actuales.')) return;
-    S={plans:p.plans}; saveS(); render(); closeModal();
+    if(!confirm('¿Reemplazar todos los datos actuales?')) return;
+    S={plans:p.plans,savings:p.savings||[]};
+    saveS(); render(); closeModal();
     showToast('✓ '+S.plans.length+' planes importados','ok');
-  }catch(e){ showToast('✗ Formato inválido — usa un archivo exportado por MiCartera','err'); }
+  }catch(e){ showToast('✗ Formato inválido','err'); }
 }
-function importFromText(){ const t=gv('f_json').trim(); if(!t){showToast('Pega el JSON primero','err');return;} importData(t); }
-function fileInputChange(e){ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>importData(ev.target.result); r.readAsText(f); e.target.value=''; }
+function importFromText(){ const t=gv('f_json').trim(); if(!t){showToast('Pega el JSON','err');return;} importData(t); }
+function fileIn(e){ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>importData(ev.target.result); r.readAsText(f); e.target.value=''; }
 function dzOver(e){e.preventDefault();e.dataTransfer.dropEffect='copy';}
 function dzDrop(e){ e.preventDefault(); const f=e.dataTransfer.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>importData(ev.target.result); r.readAsText(f); }
 
-// ══════════════════════════════════
+// ════════════════════════════════════════
 //  TOAST
-// ══════════════════════════════════
+// ════════════════════════════════════════
 let toastT;
 function showToast(msg,type=''){
   const el=document.getElementById('toast');
@@ -931,9 +1095,9 @@ function showToast(msg,type=''){
   toastT=setTimeout(()=>el.className='toast',3800);
 }
 
-// ══════════════════════════════════
+// ════════════════════════════════════════
 //  INIT
-// ══════════════════════════════════
+// ════════════════════════════════════════
 document.getElementById('yr').textContent=new Date().getFullYear();
 initTheme();
 loadS();
