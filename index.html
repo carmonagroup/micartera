@@ -428,19 +428,40 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 // ════════════════════════════════════════
 //  CALC — PLAN
 // ════════════════════════════════════════
+function calcPosPnl(pos){
+  // La fuente de verdad del dinero invertido es dineroInv (acumulado real).
+  // El valor actual se escala por variacion de precio, igual que XTB.
+  // Ejemplo: 12€ invertidos, ETF cae 3% → valor actual = 11.64€ → PyG = -0.36€
+  const bp = parseFloat(pos.buyPrice)||0;
+  const cp = parseFloat(pos.currentPrice)||0;
+  const sh = parseFloat(pos.shares)||0;
+  const di = parseFloat(pos.dineroInv);
+  // Dinero invertido real
+  const posInvested = (!isNaN(di) && di>0) ? di : (sh*bp);
+  // Valor actual
+  let posCurrentVal = 0;
+  if(sh>0 && cp>0){
+    // Si tenemos participaciones exactas, usamos sh*cp (el mas preciso)
+    posCurrentVal = sh*cp;
+  } else if(posInvested>0 && bp>0 && cp>0){
+    // Si no, escalamos el dinero invertido por la variacion del precio
+    posCurrentVal = posInvested*(cp/bp);
+  } else {
+    posCurrentVal = posInvested;
+  }
+  const pnl = posCurrentVal - posInvested;
+  const pnlPct = posInvested>0 ? (pnl/posInvested)*100 : 0;
+  return { posInvested, posCurrentVal, pnl, pnlPct };
+}
+
 function calcPlan(p){
   const totalAp=(p.aportaciones||[]).reduce((s,a)=>s+(parseFloat(a.amount)||0),0);
   let invested=0, currentVal=0;
   (p.positions||[]).forEach(pos=>{
-    const sh=parseFloat(pos.shares)||0;
-    const bp=parseFloat(pos.buyPrice)||0;
-    const cp=parseFloat(pos.currentPrice)||0;
-    // dineroInv: si existe, lo usa directamente (más preciso)
-    const di=parseFloat(pos.dineroInv);
-    invested   += isNaN(di) ? sh*bp : di;
-    currentVal += sh*cp;
+    const c=calcPosPnl(pos);
+    invested   += c.posInvested;
+    currentVal += c.posCurrentVal;
   });
-  // Si no hay posiciones con precio, usar aportaciones como base
   if(!invested && totalAp) invested=totalAp;
   if(!currentVal && invested) currentVal=invested;
   const pnl=currentVal-invested;
@@ -525,15 +546,16 @@ function renderPlans(){
     }
 
     const rows=(p.positions||[]).map((pos,j)=>{
-      const sh=parseFloat(pos.shares)||0;
-      const bp=parseFloat(pos.buyPrice)||0;
-      const cp=parseFloat(pos.currentPrice)||0;
-      const di=isNaN(parseFloat(pos.dineroInv))?sh*bp:parseFloat(pos.dineroInv);
-      const cur=sh*cp;
-      const pnl=cur-di;
-      const pnlPct=di>0?(pnl/di)*100:0;
-      const cls=pnl>=0?'cpos':'cneg';
-      const allocPct=parseFloat(pos.allocPct)||0;
+      // Usar calcPosPnl para consistencia total con calcPlan
+      const pcalc   = calcPosPnl(pos);
+      const pnl     = pcalc.pnl;
+      const pnlPct  = pcalc.pnlPct;
+      const di      = pcalc.posInvested;
+      const cls     = pnl>=0?'cpos':'cneg';
+      const bp      = parseFloat(pos.buyPrice)||0;
+      const cp      = parseFloat(pos.currentPrice)||0;
+      const sh      = parseFloat(pos.shares)||0;
+      const allocPct= parseFloat(pos.allocPct)||0;
 
       const unitsCell=isPct
         ?`<div style="font-size:11px">${allocPct.toFixed(1)}%</div>
