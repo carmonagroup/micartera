@@ -429,28 +429,30 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 //  CALC — PLAN
 // ════════════════════════════════════════
 function calcPosPnl(pos){
-  // La fuente de verdad del dinero invertido es dineroInv (acumulado real).
-  // El valor actual se escala por variacion de precio, igual que XTB.
-  // Ejemplo: 12€ invertidos, ETF cae 3% → valor actual = 11.64€ → PyG = -0.36€
-  const bp = parseFloat(pos.buyPrice)||0;
-  const cp = parseFloat(pos.currentPrice)||0;
-  const sh = parseFloat(pos.shares)||0;
-  const di = parseFloat(pos.dineroInv);
-  // Dinero invertido real
-  const posInvested = (!isNaN(di) && di>0) ? di : (sh*bp);
-  // Valor actual
+  // REGLA UNICA: dineroInv es lo que pusiste de tu bolsillo (fuente de verdad).
+  // Valor actual = dineroInv * (precioActual / precioMedio).
+  // Participaciones (shares) solo se usan para mostrar cuantas tienes, NO para calcular valor.
+  // Ejemplo: 12€ invertidos, precio medio 88€, precio actual 85.36€ (cae 3%)
+  //   → valor actual = 12 * (85.36/88) = 11.64€ → PyG = -0.36€ (-3%)
+  const bp = parseFloat(pos.buyPrice)||0;      // precio medio de compra
+  const cp = parseFloat(pos.currentPrice)||0;  // precio actual de mercado
+  const di = parseFloat(pos.dineroInv);        // dinero real puesto (acumulado)
+  const sh = parseFloat(pos.shares)||0;        // participaciones (solo informativo)
+
+  // Dinero invertido: siempre dineroInv si existe, si no sh*bp como fallback
+  const posInvested = (!isNaN(di) && di > 0) ? di : (sh * bp);
+
+  // Valor actual: SIEMPRE escalar dineroInv por variacion de precio
+  // Nunca usar sh*cp porque genera doble conteo cuando ya tienes dineroInv
   let posCurrentVal = 0;
-  if(sh>0 && cp>0){
-    // Si tenemos participaciones exactas, usamos sh*cp (el mas preciso)
-    posCurrentVal = sh*cp;
-  } else if(posInvested>0 && bp>0 && cp>0){
-    // Si no, escalamos el dinero invertido por la variacion del precio
-    posCurrentVal = posInvested*(cp/bp);
-  } else {
-    posCurrentVal = posInvested;
+  if(posInvested > 0 && bp > 0 && cp > 0){
+    posCurrentVal = posInvested * (cp / bp);
+  } else if(posInvested > 0){
+    posCurrentVal = posInvested; // sin precio → sin PyG
   }
-  const pnl = posCurrentVal - posInvested;
-  const pnlPct = posInvested>0 ? (pnl/posInvested)*100 : 0;
+
+  const pnl    = posCurrentVal - posInvested;
+  const pnlPct = posInvested > 0 ? (pnl / posInvested) * 100 : 0;
   return { posInvested, posCurrentVal, pnl, pnlPct };
 }
 
@@ -1033,25 +1035,42 @@ function addAp(i){
   p.aportaciones.push({amount,fecha});
 
   if(p.planType==='pct'){
-    // Distribuir la aportación entre las posiciones según su %
+    // Distribuir la aportación entre las posiciones según su % asignado.
+    // dineroInv es la fuente de verdad: acumula el dinero real puesto en cada activo.
+    // buyPrice se recalcula como media ponderada para mostrar el precio medio de compra.
+    // Nunca se usa sh*cp para calcular valor — solo dineroInv*(cp/bp).
     (p.positions||[]).forEach((pos,j)=>{
-      const pct=parseFloat(pos.allocPct)||0;
-      if(pct<=0) return;
-      const dineroPos=amount*pct/100; // dinero destinado a esta posición
-      // Precio de compra: usar el introducido manualmente o el precio actual
-      const np=parseFloat(document.getElementById('f_np_'+j)?.value)||parseFloat(pos.currentPrice)||0;
-      // Participaciones: usar las introducidas manualmente o calcular automáticamente
-      const nsInput=document.getElementById('f_ns_'+j)?.value;
-      const ns=nsInput&&nsInput.trim()!==''?parseFloat(nsInput):(np>0?dineroPos/np:0);
-      if(ns>0&&np>0){
-        const oldSh=parseFloat(pos.shares)||0, oldBp=parseFloat(pos.buyPrice)||0;
-        const total=oldSh+ns;
-        pos.shares=parseFloat(total.toFixed(8));
-        pos.buyPrice=total>0?parseFloat(((oldSh*oldBp+ns*np)/total).toFixed(6)):np;
+      const pct = parseFloat(pos.allocPct)||0;
+      if(pct <= 0) return;
+
+      // Dinero de esta aportación que va a esta posición
+      const dineroPos = amount * pct / 100;
+
+      // Precio al que se compró en esta aportación
+      // Si el usuario lo introdujo manualmente, usarlo; si no, usar precio actual
+      const npInput = document.getElementById('f_np_'+j)?.value;
+      const np = (npInput && npInput.trim()!=='') ? parseFloat(npInput) : (parseFloat(pos.currentPrice)||0);
+
+      // ── Acumular dineroInv (fuente de verdad del PyG) ──────────
+      const oldDinv = isNaN(parseFloat(pos.dineroInv)) ? 0 : parseFloat(pos.dineroInv);
+      pos.dineroInv = parseFloat((oldDinv + dineroPos).toFixed(2));
+
+      // ── Actualizar participaciones y precio medio (informativo) ──
+      if(np > 0){
+        const nsInput = document.getElementById('f_ns_'+j)?.value;
+        // Participaciones nuevas: manuales si las introdujo, si no calcular
+        const ns = (nsInput && nsInput.trim()!=='') ? parseFloat(nsInput) : dineroPos/np;
+        if(ns > 0){
+          const oldSh = parseFloat(pos.shares)||0;
+          const oldBp = parseFloat(pos.buyPrice)||0;
+          const totalSh = oldSh + ns;
+          // Media ponderada del precio de compra
+          pos.shares   = parseFloat(totalSh.toFixed(8));
+          pos.buyPrice = totalSh > 0
+            ? parseFloat(((oldSh*oldBp + ns*np) / totalSh).toFixed(6))
+            : np;
+        }
       }
-      // Actualizar dineroInv sumando la parte proporcional
-      const existingDinv=isNaN(parseFloat(pos.dineroInv))?0:parseFloat(pos.dineroInv);
-      pos.dineroInv=parseFloat((existingDinv+dineroPos).toFixed(2));
     });
   }
   saveS(); render(); closeModal();
